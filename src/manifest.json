@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "boto",
+    "version": "0.0.1",
+    "description": "🐬 Um adaptador de interfaces web",
+    "author": "Mateus Wolkmer",
+    "homepage_url": "https://github.com/mateuswolkmer/boto",
+    "options_page": "ui/options.html",
+    "background": {
+        "scripts": [
+            "scripts/background.js"
+        ],
+        "persistent": false
+    },
+    "page_action": {
+        "default_popup": "ui/popup.html"
+    },
+    "permissions": [
+        "activeTab",
+        "declarativeContent",
+        "storage"
+    ]
+}
