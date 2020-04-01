@@ -1,0 +1,40 @@
+{
+    "name": "boto",
+    "version": "1.0.0",
+    "description": "Um adaptador de interfaces web, melhorando a usabilidade de páginas à partir de limitações e gostos do usuário",
+    "scripts": {
+        "clean": "rd /s /q dist && cpy manifest.json dist && cpy src/assets/* dist/assets",
+        "prebuild": "npm run clean",
+        "prewatch": "npm run clean",
+        "watch": "npm-run-all watch:*",
+        "build": "npm-run-all build:*",
+        "build:contentscript-background": "webpack --env.NODE_ENV=production --config webpack.config.js",
+        "watch:contentscript-background": "webpack --env.NODE_ENV=development --config webpack.config.js -w",
+        "watch:popup": "npm run watch:build --prefix src/popup",
+        "build:popup": "npm run build --prefix src/popup && cd src/popup/build && cpy * /static/* ../../../dist/popup --parents"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mateuswolkmer/boto.git"
+    },
+    "keywords": [],
+    "author": "Mateus Wolkmer",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/mateuswolkmer/boto/issues"
+    },
+    "homepage": "https://github.com/mateuswolkmer/boto#readme",
+    "devDependencies": {
+        "@types/chrome": "0.0.103",
+        "@types/node": "^13.9.8",
+        "cpy-cli": "^3.1.0",
+        "cra-build-watch": "^3.2.0",
+        "css-loader": "^3.4.2",
+        "mini-css-extract-plugin": "^0.9.0",
+        "node-sass": "^4.13.1",
+        "npm-run-all": "^4.1.5",
+        "sass-loader": "^8.0.2",
+        "webpack": "4.42.0",
+        "webpack-cli": "^3.3.11"
+    }
+}

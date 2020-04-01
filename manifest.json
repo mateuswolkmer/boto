@@ -1,0 +1,42 @@
+{
+    "manifest_version": 2,
+    "name": "boto",
+    "version": "0.0.1",
+    "description": "🐬 Um adaptador de interfaces web",
+    "author": "Mateus Wolkmer",
+    "homepage_url": "https://github.com/mateuswolkmer/boto",
+    "icons": {
+        "16": "assets/boto_16.png",
+        "32": "assets/boto_32.png",
+        "64": "assets/boto_64.png",
+        "128": "assets/boto_128.png"
+    },
+    "content_scripts": [{
+        "js": [
+            "contentscript.js"
+        ],
+        "css": [
+            "contentscript.css"
+        ],
+        "matches": [
+            "<all_urls>"
+        ]
+    }],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "browser_action": {
+        "default_title": "boto",
+        "default_icon": "assets/boto_16.png",
+        "default_popup": "popup/index.html"
+    },
+    "permissions": [
+        "activeTab",
+        "declarativeContent",
+        "storage"
+    ],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
