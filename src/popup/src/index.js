@@ -1,9 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Popup from './Popup'
 
-ReactDOM.render(
-    <App />,
-    document.getElementById('root')
-);
+console.log('popup: loaded')
+
+ReactDOM.render(< Popup />, document.getElementById('root'))

@@ -1,0 +1,62 @@
+$color_primary:         #FD7F9D
+$color_secondary:       #1A4243
+$color_primary-light:   #FCC5CD
+$color_secondary-light: #6EDCD3
+$color_primary-dark:    #61333D
+$color_secondary-dark:  #1A4243
+
+body
+    margin: 0
+    *
+        box-sizing: border-box
+
+main
+    width: 300px
+    padding: 0.7rem
+    display: flex
+    flex-direction: column
+    align-items: center
+
+    .header
+        text-align: center
+        margin: 0 0 12px 0
+        &_title
+            color: $color_primary
+            margin: 0 0 -4px 0
+        &_subtitle
+            color: $color_primary-dark
+
+    #onoff_checkbox
+        &::after
+            margin: 0 0 0 14px
+        &:checked::after
+            content: 'Ativo'
+        &:not(:checked)::after
+            content: 'Desativo'
+
+    .options
+        width: 100%
+        display: flex
+        flex-direction: column
+        margin: 12px 0 0 0
+        &_item
+            display: flex
+            flex-direction: column
+            align-items: center
+            border-top: 1px solid $color_primary
+        &_slider
+            align-self: stretch
+            display: flex
+            justify-content: space-between
+            align-items: center
+            margin: 4px
+            input[type='checkbox']
+                &::before
+                    content: 'Auto'
+                    margin: 0 0 0 14px
+
+            input[type='number']
+                width: 60px
+                text-align: right
+            
+

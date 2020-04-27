@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "boto",
+    "name": "Boto",
     "version": "0.0.1",
     "description": "🐬 Um adaptador de interfaces web",
     "author": "Mateus Wolkmer",
@@ -15,28 +15,28 @@
         "js": [
             "contentscript.js"
         ],
-        "css": [
-            "contentscript.css"
-        ],
         "matches": [
             "<all_urls>"
-        ]
+        ],
+        "run_at": "document_start",
+        "all_frames": true,
+        "match_about_blank": true
     }],
     "background": {
+        "persistent": true,
         "scripts": [
             "background.js"
-        ],
-        "persistent": false
+        ]
     },
     "browser_action": {
-        "default_title": "boto",
+        "default_title": "Boto",
         "default_icon": "assets/boto_16.png",
         "default_popup": "popup/index.html"
     },
     "permissions": [
-        "activeTab",
-        "declarativeContent",
-        "storage"
-    ],
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+        "fontSettings",
+        "storage",
+        "tabs",
+        "<all_urls>"
+    ]
 }
