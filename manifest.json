@@ -13,6 +13,7 @@
     },
     "content_scripts": [{
         "js": [
+            "axs_testing.js",
             "contentscript.js"
         ],
         "matches": [
@@ -22,6 +23,9 @@
         "all_frames": true,
         "match_about_blank": true
     }],
+    "web_accessible_resources": [
+        "axs_testing.js"
+    ],
     "background": {
         "persistent": true,
         "scripts": [
@@ -37,6 +41,8 @@
         "fontSettings",
         "storage",
         "tabs",
+        "webRequest",
+        "webRequestBlocking",
         "<all_urls>"
     ]
 }
