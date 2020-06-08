@@ -1,8 +1,16 @@
 /*global chrome*/
 import React, { useState, useEffect } from 'react'
+import { Link, createTheme, colors, ThemeProvider, Icon } from 'bold-ui'
 import './popup.sass'
 import logo from './assets/boto.png'
-import OptionsItem from './components/OptionsItem.tsx'
+import OptionsItem, { OptionsItemTypes } from './components/OptionsItem.jsx'
+
+const botoTheme = createTheme({
+    pallete: {
+        primaryScale: colors.pink,
+        highlightScale: colors.turquoise
+    },
+})
 
 function Popup() {
 
@@ -21,49 +29,41 @@ function Popup() {
     const [contrastValue, setContrastValue] = useState(0)
     const [zoomValue, setZoomValue] = useState(0)
     const [fontSizeValue, setFontSizeValue] = useState(0)
-    const [daltonismValue, setDaltonismValue] = useState(0)
+    const [daltonismValue, setDaltonismValue] = useState('Nenhum')
 
-    const [noiseAuto, setNoiseAuto] = useState(true)
-    const [contrastAuto, setContrastAuto] = useState(true)
-    const [zoomAuto, setZoomAuto] = useState(true)
-    const [fontSizeAuto, setFontSizeAuto] = useState(true)
-    const [daltonismAuto, setDaltonismAuto] = useState(true)
+    const noiseItems = ['Propagandas', 'Aceitação de "cookies"', 'Imagens']
+    const daltonismItems = ['Nenhum', 'Protanopia', 'Deuteranopia', 'Tritanopia']
+
+    const defaultStep = 20;
 
     return (
-        <main>
-            <section className='header'>
-                <h1 className='header_greetings'>Olá, <a className='header_greetings-name' href='#'>Mateus</a></h1>
-                <span className="header_settings-icon material-icons">settings</span>
-            </section>
-            
-            {/* <div style={{'width': '100%', 'margin-top': '10px'}}>
-                <input id='ads' type='checkbox'/>
-                <label for='ads' style={{'padding-left': '5px'}}>Desativar propagandas <sup>?</sup></label>
-            </div>
-            <div style={{'width': '100%'}}>
-                <input id='cookies' type='checkbox'/>
-                <label for='cookies' style={{'padding-left': '5px'}}>Desativar popups de Cookies <sup>?</sup></label>
-            </div> */}
+        <ThemeProvider theme={botoTheme}>
+            <main>
+                <section className='header'>
+                    <h1 className='header_greetings'>Olá, <Link href='#'>Mateus</Link></h1>
+                    <span>Todas as configurações foram personalizadas para você, mas é possível modificá-las abaixo</span>
+                    <span className="header_settings-icon material-icons"><Icon icon='gearFilled'/></span>
+                </section>
 
-            {/* <input id='onoff_checkbox' type='checkbox' /> */}
-            <section className='options'>
-                <h3 className='options_title'>Configurações</h3>
-                <OptionsItem label='Remover ruído' value={noiseValue} valueSetter={setNoiseValue} auto={noiseAuto} autoSetter={setNoiseAuto} />
-                <OptionsItem label='Contraste' value={contrastValue} valueSetter={setContrastValue} auto={contrastAuto} autoSetter={setContrastAuto} />
-                <OptionsItem label='Zoom' value={zoomValue} valueSetter={setZoomValue} auto={zoomAuto} autoSetter={setZoomAuto} />
-                <OptionsItem label='Fonte' value={fontSizeValue} valueSetter={setFontSizeValue} auto={fontSizeAuto} autoSetter={setFontSizeAuto} />
-                <OptionsItem label='Daltonismo' value={daltonismValue} valueSetter={setDaltonismValue} auto={daltonismAuto} autoSetter={setDaltonismAuto} />
-            </section>
+                <section className='options'>
+                    {/* <h3 className='options_title'>Configurações</h3> */}
+                    <OptionsItem label='Contraste' type={OptionsItemTypes.slider} value={contrastValue} valueSetter={setContrastValue} sliderStep={defaultStep} />
+                    <OptionsItem label='Zoom' type={OptionsItemTypes.slider} value={zoomValue} valueSetter={setZoomValue} sliderStep={defaultStep} />
+                    <OptionsItem label='Fonte' type={OptionsItemTypes.slider} value={fontSizeValue} valueSetter={setFontSizeValue} sliderStep={defaultStep} />
+                    <OptionsItem label='Remover ruído' type={OptionsItemTypes.multiselect} value={noiseValue} valueSetter={setNoiseValue} selectItems={noiseItems} />
+                    <OptionsItem label='Daltonismo' type={OptionsItemTypes.select} value={daltonismValue} valueSetter={setDaltonismValue} selectItems={daltonismItems} />
+                </section>
 
-            <section className='footer'>
-                <a href='#' target='_blank' className='footer_logo'>Boto<img src={logo}/></a>
-                <span className='footer_links'>
-                    <a href='#'>Ajuda</a>
-                    <a href='#'>Privacidade</a>
-                    <a href='#'>Contribua</a>
-                </span>
-            </section>
-        </main>
+                <section className='footer'>
+                    <a href='#' target='_blank' className='footer_logo'>Boto<img src={logo}/></a>
+                    <span className='footer_links'>
+                        <Link title='Ajuda' href='#'>Ajuda</Link>
+                        <Link title='Privacidade' href='#'>Privacidade</Link>
+                        <Link title='Contribua' href='#'>Contribua</Link>
+                    </span>
+                </section>
+            </main>            
+        </ThemeProvider>
     );
 }
 

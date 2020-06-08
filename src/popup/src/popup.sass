@@ -1,14 +1,9 @@
-// @import 'https://fonts.googleapis.com/css2?family=Chewy&family=Lato&display=swap'
-
-$color_primary:         #FD7F9D
-$color_secondary:       #1A4243
-$color_primary-light:   #FCC5CD
-$color_secondary-light: #6EDCD3
-$color_primary-dark:    #61333D
-$color_secondary-dark:  #0b2020
+// https://bold.bridge.ufsc.br/en/design-guidelines/color
+$color_primary:         #C8206F // pink c40
+$color_secondary:       #02786D // turquoise c40
 
 $font_display:  'Oxygen', sans-seri
-$font_body:     'Open Sans', sans-serif
+$font_body:     'IBM Plex Sans', sans-serif
 
 body
     font-family: $font_body
@@ -16,16 +11,8 @@ body
     *
         box-sizing: border-box
 
-a
-    color: $color_secondary
-    &:visited
-        color: $color_secondary
-    &:active
-        color: $color_primary
-
 .material-icons
-    color: $color_primary
-    font-size: 1rem
+    font-size: 1.5rem
 
 main
     width: 300px
@@ -40,10 +27,13 @@ main
         &_greetings
             margin: 6px
             font-family: $font_display
+            font-size: 1.5rem
             color: $color_primary
-            &-name
-                color: $color_primary
+            a
+                font-family: $font_display
+                font-size: 1.5rem
         &_settings-icon
+            color: $color_primary
             position: absolute
             top: 8px
             right: 8px
@@ -53,7 +43,6 @@ main
         display: flex
         flex-direction: column
         &_title
-            margin: 0
             text-align: center
         &_item
             display: flex
@@ -64,16 +53,41 @@ main
                 width: 100%
                 display: flex
                 justify-content: space-between
-        &_slider
-            align-self: stretch
-            display: flex
-            justify-content: space-between
-            align-items: center
-            margin: 4px
-
-            input[type='number']
-                width: 60px
-                text-align: right
+                &-name
+                    font-weight: bold
+            &_value
+                align-self: stretch
+                display: flex
+                justify-content: space-between
+                align-items: center
+                margin: 2px
+                &-slider, > div
+                    flex-grow: 1
+                &-slider
+                    margin: auto
+                    -webkit-appearance: none
+                    position: relative
+                    overflow: hidden
+                    height: 32px
+                    cursor: pointer
+                    margin: 0 6px
+                    border-radius: 4px
+                    border: 1px solid #696979
+                    transition: all .2s
+                    &::-webkit-slider-runnable-track 
+                        background: #F0F0F5
+                    &::-webkit-slider-thumb
+                        -webkit-appearance: none
+                        width: 20px
+                        height: 32px
+                        background: #fff
+                        box-shadow: -100vw 0 0 100vw $color_primary
+                        border: 1px solid #696979
+                        border-width: 0 1px
+                    &:focus                        
+                        outline: none
+                        box-shadow: 0 0 0 2px #F0F0F5, 0 0 0 4px #C8206F
+                
             
     .footer
         width: 100%
