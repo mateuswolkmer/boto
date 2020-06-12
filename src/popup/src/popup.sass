@@ -56,45 +56,51 @@ main
                 &-name
                     font-weight: bold
             &_value
-                align-self: stretch
                 display: flex
-                justify-content: space-between
+                flex-direction: column
                 align-items: center
+                justify-content: stretch
+                width: 100%
                 margin: 2px
-                &-slider, > div
+                &-slider > input[type='range'], > div
                     flex-grow: 1
+                    align-self: stretch
                 &-slider
-                    margin: auto
-                    -webkit-appearance: none
-                    position: relative
-                    overflow: hidden
-                    height: 32px
-                    cursor: pointer
-                    margin: 0 6px
-                    border-radius: 4px
-                    border: 1px solid #696979
-                    transition: all .2s
-                    &::-webkit-slider-runnable-track 
-                        background: #F0F0F5
-                    &::-webkit-slider-thumb
+                    align-self: stretch
+                    display: flex
+                    justify-content: space-between
+                    align-items: center
+                    > input[type='range']
+                        margin: auto
                         -webkit-appearance: none
-                        width: 20px
+                        position: relative
+                        overflow: hidden
                         height: 32px
-                        background: #fff
-                        box-shadow: -100vw 0 0 100vw $color_primary
+                        cursor: pointer
+                        margin: 0 6px
+                        border-radius: 4px
                         border: 1px solid #696979
-                        border-width: 0 1px
-                    &:focus                        
-                        outline: none
-                        box-shadow: 0 0 0 2px #F0F0F5, 0 0 0 4px #C8206F
-                
-            
+                        transition: all .2s
+                        &::-webkit-slider-runnable-track 
+                            background: #F0F0F5
+                        &::-webkit-slider-thumb
+                            -webkit-appearance: none
+                            width: 20px
+                            height: 32px
+                            background: #fff
+                            box-shadow: -100vw 0 0 100vw $color_primary
+                            border: 1px solid #696979
+                            border-width: 0 1px
+                        &:focus                        
+                            outline: none
+                            box-shadow: 0 0 0 2px #F0F0F5, 0 0 0 4px #C8206F
+
     .footer
         width: 100%
         display: flex
         justify-content: space-evenly
         align-items: center
-        margin-top: 10px
+        margin-top: 16px
         &_logo
             font-family: $font_display
             color: $color_primary
@@ -110,3 +116,14 @@ main
         &_links
             a:not(:last-of-type)
                 margin-right: 6px
+
+.user-form
+    &_field
+        height: 180px
+        margin: 14px 0
+        width: 100%
+    &_footer
+        margin-top: 10px
+        display: flex
+        justify-content: space-between
+        width: 100%
