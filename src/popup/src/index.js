@@ -4,4 +4,4 @@ import Popup from './Popup'
 
 console.log('popup: loaded')
 
-ReactDOM.render(< Popup />, document.getElementById('root'))
+ReactDOM.render( < Popup / > , document.getElementById('root'))

@@ -25,7 +25,7 @@ main
         text-align: center
         margin: 0 0 12px 0
         &_greetings
-            margin: 6px
+            margin: 0px
             font-family: $font_display
             font-size: 1.5rem
             color: $color_primary
@@ -38,66 +38,81 @@ main
             top: 8px
             right: 8px
 
-    .options
+    .tabs
         width: 100%
+        margin-bottom: 10px
+        ul[role='tablist']
+            justify-content: center
+
+    .body
+        width: 100%
+        flex-grow: 1
+        height: 451px
         display: flex
         flex-direction: column
-        &_title
-            text-align: center
-        &_item
-            display: flex
-            flex-direction: column
-            align-items: center
-            margin: 6px 0
-            &_title
-                width: 100%
-                display: flex
-                justify-content: space-between
-                &-name
-                    font-weight: bold
-            &_value
+        &-interface, &-extension
+            .options_item
                 display: flex
                 flex-direction: column
                 align-items: center
-                justify-content: stretch
-                width: 100%
-                margin: 2px
-                &-slider > input[type='range'], > div
-                    flex-grow: 1
-                    align-self: stretch
-                &-slider
-                    align-self: stretch
+                margin: 5px 0
+                &_title
+                    width: 100%
                     display: flex
                     justify-content: space-between
+                    &-name
+                        font-weight: bold
+                &_value
+                    display: flex
+                    flex-direction: column
                     align-items: center
-                    > input[type='range']
-                        margin: auto
-                        -webkit-appearance: none
-                        position: relative
-                        overflow: hidden
-                        height: 32px
-                        cursor: pointer
-                        margin: 0 6px
-                        border-radius: 4px
-                        border: 1px solid #696979
-                        transition: all .2s
-                        &::-webkit-slider-runnable-track 
-                            background: #F0F0F5
-                        &::-webkit-slider-thumb
+                    justify-content: stretch
+                    width: 100%
+                    margin: 2px
+                    &-slider > input[type='range'], > div
+                        flex-grow: 1
+                        align-self: stretch
+                    &-slider
+                        align-self: stretch
+                        display: flex
+                        justify-content: space-between
+                        align-items: center
+                        > input[type='range']
+                            margin: auto
                             -webkit-appearance: none
-                            width: 20px
+                            position: relative
+                            overflow: hidden
                             height: 32px
-                            background: #fff
-                            box-shadow: -100vw 0 0 100vw $color_primary
+                            cursor: pointer
+                            margin: 0 6px
+                            border-radius: 4px
                             border: 1px solid #696979
-                            border-width: 0 1px
-                        &:focus                        
-                            outline: none
-                            box-shadow: 0 0 0 2px #F0F0F5, 0 0 0 4px #C8206F
+                            transition: all .2s
+                            &::-webkit-slider-runnable-track 
+                                background: #F0F0F5
+                            &::-webkit-slider-thumb
+                                -webkit-appearance: none
+                                width: 20px
+                                height: 32px
+                                background: #fff
+                                box-shadow: -100vw 0 0 100vw $color_primary
+                                border: 1px solid #696979
+                                border-width: 0 1px
+                            &:focus                        
+                                outline: none
+                                box-shadow: 0 0 0 2px #F0F0F5, 0 0 0 4px #C8206F
+                    &-description
+                        position: absolute
+                        margin-top: -18px
+                    &-custom
+                        display: flex
+                        justify-content: space-between
+                        align-items: center
 
     .footer
         width: 100%
         display: flex
+        justify-self: flex-end
         justify-content: space-evenly
         align-items: center
         margin-top: 16px
@@ -118,12 +133,42 @@ main
                 margin-right: 6px
 
 .user-form
+    text-align: left
+    &.user-form-profile
+        width: 100%
+        > div
+            width: 100%
+            margin-bottom: 6px
+    &_welcome
+        margin: 10px 0
+        &-title
+            text-align: center
+            color: $color_primary
+            font: $font_display
+            margin-bottom: 12px
+        &-buttons
+            margin-top: 18px
+            width: 100%
+            display: flex
+            justify-content: center
+            button
+                margin: 0 6px
     &_field
         height: 180px
-        margin: 14px 0
+        margin: 22px 0
         width: 100%
+        &-tip
+            display: block
+            margin-top: 15px
+    &_stepper
+        width: 100%
+        > div
+            margin: 0 -12px
     &_footer
         margin-top: 10px
         display: flex
         justify-content: space-between
+        align-items: center
         width: 100%
+        button
+            width: 100px

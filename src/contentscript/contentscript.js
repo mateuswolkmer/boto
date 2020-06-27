@@ -1,231 +1,157 @@
-import Contrast from './utils/color-contrast'
-// import './axs_testing'
-// var goog = require('./utils/goog-axs_testing')
+import RemoveCookieBanners from './functions/cookiebanner-go-away'
+import * as constants from '../shared/constants'
+import { sendMessageToBackground } from './utils/messageManager'
+import { createStylesheet, addStyleRule, removeStyleRuleNode, hideClickedElement, hideAllImageElements, showAllElements, domContrastFix } from './utils/domUtils'
+import { removeElementCursorRule, fontSizeRule, zoomRule, contrastBrightnessRule } from './utils/cssRules'
 
 console.log('contentscript: loaded')
 
-// Listen for messages from the popup.
+var prevSettingsData = constants.defaultSettingsData
+var prevExtensionData = {}
+var botoStylesheet
+
+var fixedElements = []
+var hiddenElements = []
+var hiddenImageElements = []
+
+// Observer to automatically hide new added images
+var hideImagesObserver = new MutationObserver(function(mutations, observer) {
+    mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+            if (node.tagName === 'img') {
+                node.style.visibility = 'hidden'
+                hiddenImageElements.push(node)
+            } else if (node.getElementsByTagName) {
+                let imagesInsideNewNode = node.getElementsByTagName('img')
+                for (var x = 0; x < imagesInsideNewNode.length; x++) {
+                    let imageNode = imagesInsideNewNode[x]
+                    imageNode.style.visibility = 'hidden'
+                    hiddenImageElements.push(imageNode)
+                }
+            }
+        })
+    })
+})
+
+// CSS rule nodes
+var removeElementCursorRuleNode = {}
+var fontSizeRuleNode = {}
+var zoomRuleNode = {}
+var contrastBrightnessRuleNode = {}
+
+// Event to hide the next clicked element
+function hideNextClickedElementEvent(e) {
+    e.stopImmediatePropagation()
+    e.preventDefault()
+
+    let element = hideClickedElement(e)
+    if (element) hiddenElements.push(element)
+
+    removeStyleRuleNode(botoStylesheet, removeElementCursorRuleNode)
+    document.removeEventListener('click', hideNextClickedElementEvent)
+    return null
+}
+
+// Update DOM based on settingsData argument
+function settingsDataUpdate(newSettingsData) {
+    if (prevSettingsData.options.contrast !== newSettingsData.options.contrast ||
+        prevSettingsData.options.brightness !== newSettingsData.options.brightness) {
+        if (newSettingsData.options.contrast === 0 && newSettingsData.options.brightness === 0)
+            removeStyleRuleNode(botoStylesheet, contrastBrightnessRuleNode)
+        else {
+            let newContrast = (newSettingsData.options.contrast * (newSettingsData.options.contrast > 0 ? 0.02 : 0.01)) + 1
+            let newBrightness = (newSettingsData.options.brightness * (newSettingsData.options.brightness > 0 ? 0.02 : 0.01)) + 1
+            contrastBrightnessRuleNode = addStyleRule(botoStylesheet, contrastBrightnessRule(newContrast, newBrightness), contrastBrightnessRuleNode)
+        }
+    }
+
+    if (prevSettingsData.options.fontSize !== newSettingsData.options.fontSize) {
+        if (newSettingsData.options.fontSize === 0)
+            removeStyleRuleNode(botoStylesheet, fontSizeRuleNode)
+        else {
+            // let newFontSize = newSettingsData.options.fontSize + 100
+            // let newLetterSpacing = newSettingsData.options.fontSize < 1 ? 0 : (newSettingsData.options.fontSize * 2 / 100)
+            // let newLineHeight = (newSettingsData.options.fontSize * 3 / 10) < 1.5 ? 1.5 : (newSettingsData.options.fontSize * 3 / 10)
+            let newFontSize = newSettingsData.options.fontSize + 100
+            let newLetterSpacing = newSettingsData.options.fontSize < 1 ? 0 : (newSettingsData.options.fontSize / 300)
+            let newLineHeight = (newSettingsData.options.fontSize * 3 / 10) < 1.5 ? 1.5 : (newSettingsData.options.fontSize / 10)
+            fontSizeRuleNode = addStyleRule(botoStylesheet, fontSizeRule(newFontSize, newLetterSpacing, newLineHeight), fontSizeRuleNode)
+        }
+    }
+
+    if (prevSettingsData.options.zoom !== newSettingsData.options.zoom) {
+        if (newSettingsData.options.zoom === 0)
+            removeStyleRuleNode(botoStylesheet, zoomRuleNode)
+        else {
+            let newZoom = newSettingsData.options.zoom * 2 + 100 || 1
+            zoomRuleNode = addStyleRule(botoStylesheet, zoomRule(newZoom), zoomRuleNode)
+        }
+    }
+
+    if (newSettingsData.options.noise.includes(constants.noiseTypes.IMAGES) && !prevSettingsData.options.noise.includes(constants.noiseTypes.IMAGES)) {
+        hiddenImageElements = hideAllImageElements()
+        hideImagesObserver.observe(document, { childList: true, subtree: true });
+    } else if (!newSettingsData.options.noise.includes(constants.noiseTypes.IMAGES) && prevSettingsData.options.noise.includes(constants.noiseTypes.IMAGES)) {
+        showAllElements(hiddenImageElements)
+        hideImagesObserver.disconnect();
+        hiddenImageElements = []
+    }
+
+    prevSettingsData = newSettingsData
+}
+// Update DOM based on extensionData argument
+function extensionDataUpdate(newExtensionData) {
+    // Checks the DOM for W3C bad contrast ratios and fixes them
+    if (newExtensionData.autoFixElements && (!prevExtensionData || !prevExtensionData.autoFixElements))
+        fixedElements = domContrastFix()
+    else if (!newExtensionData.autoFixElements && (!prevExtensionData || prevExtensionData.autoFixElements)) {
+        fixedElements.forEach(fixedElement => fixedElement.elem.style.color = fixedElement.originalColor)
+        fixedElements = []
+    }
+
+    // Automatically accepts and closes all "accept cookies" modals
+    if (newExtensionData.acceptCookies && (!prevExtensionData || !prevExtensionData.acceptCookies))
+        RemoveCookieBanners()
+
+    prevExtensionData = newExtensionData
+}
+
+// Messages listener
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
-    if ((msg.from === 'popup') && (msg.subject === 'checkAccessibility')) {
-        response(Contrast.check())
+    if (msg.from === constants.commAgents.POPUP || msg.from === constants.commAgents.BACKGROUND) {
+        switch (msg.subject) {
+
+            case constants.commSubjects.UPDATE.SETTINGS_DATA:
+                settingsDataUpdate(msg.payload)
+                break
+
+            case constants.commSubjects.UPDATE.EXTENSION_DATA:
+                extensionDataUpdate(msg.payload)
+                break
+
+            case constants.commSubjects.HIDDEN_ELEMENTS.HIDE_NEXT:
+                removeElementCursorRuleNode = addStyleRule(botoStylesheet, removeElementCursorRule(), removeElementCursorRuleNode)
+                document.addEventListener('click', hideNextClickedElementEvent)
+                break
+
+            case constants.commSubjects.HIDDEN_ELEMENTS.RESET:
+                showAllElements(hiddenElements)
+                hiddenElements = []
+                break
+
+            default:
+                response('unknown message subject')
+        }
     }
 })
 
+// DOM load
 document.addEventListener("DOMContentLoaded", () => {
-    // let check = Contrast.check()
-    setTimeout(() => console.log('check', Contrast.check()), 500)
-        // console.log('axs', axs)
-});
+    botoStylesheet = createStylesheet()
 
-// https://gist.github.com/BlaM/6d826d6e9d77d2d77bf9a92fdad55788
-
-(function() {
-    'use strict';
-
-    var config = {
-        selectors: {
-            rules: [
-                // https://cookiesok.com/
-                { hostname: /./, action: "click", target: ".CookiesOK" },
-
-                { hostname: /./, action: "click", target: "#closeCookieBanner" },
-                { hostname: /./, action: "click", target: ".CookieBanner-button" },
-                { hostname: /./, action: "click", target: "#nts-set-cookie" },
-                { hostname: /./, action: "click", target: ".cc_btn_accept_all" },
-                { hostname: /./, action: "click", target: ".noticeCookiesContent .CustomDismissCtrl" },
-                { hostname: /./, action: "click", target: ".cookie-consent .cookie-btn" },
-                { hostname: /./, action: "click", target: "#accept-cookies" },
-                { hostname: /./, action: "click", target: "#cookie_button_agree" },
-                { hostname: /./, action: "click", target: "#cookies-agreement #agree-button" },
-                { hostname: /./, action: "click", target: "#cookielayer .action-btn" },
-                { hostname: /./, action: "click", target: ".cookie.nag .close" },
-                { hostname: /./, action: "click", target: "#__tealiumGDPRecModal #consent_prompt_submit" },
-                { hostname: /./, action: "click", target: 'button[data-selenium="CookiesAcceptButton"]' },
-                { hostname: /./, action: "click", target: ".gdpr__button" },
-                { hostname: /./, action: "click", target: ".eu-cookie-compliance-agree-button" },
-                { hostname: /./, action: "click", target: ".cookie-notification .js-cookie-notification-hide" },
-                { hostname: /./, action: "click", target: ".js-accept-cookie-policy" },
-
-                // http://cookielawinfo.com/user-guide/
-                { hostname: /./, action: "click", target: "#cookie-law-info-bar #cookie_action_close_header" },
-
-                // https://www.jqueryscript.net/other/Minimal-EU-Cookies-Law-Notice-Plugin-For-jQuery-Cookiebar.html
-                { hostname: /./, action: "click", target: "#cookie-bar .cb-enable" },
-                { hostname: /./, action: "click", target: ".cookie-bar .cb-enable" },
-
-                // medium.com
-                { hostname: /./, action: "click", target: '.butterBar--privacy button[title*="I agree"]' },
-                // blogspot.com
-                { hostname: /./, action: "click", target: "#cookieChoiceDismiss" },
-                // oath (Tumblr)
-                { hostname: /./, action: "click", target: 'div[data-view="guce-gdpr"] button[data-submit="agree"]' },
-                // HumbleBundle
-                { hostname: /./, action: "click", target: "#_evidon-accept-button" },
-                // WordPress
-                { hostname: /./, action: "click", target: ".widget_eu_cookie_law_widget .accept" },
-                // Doodle
-                { hostname: /./, action: "click", target: "#d-dismissCookieBanner" },
-                // Sivantos
-                { hostname: /./, action: "click", target: ".cookie-confirmation-button" },
-                // StackOverflow
-                { hostname: /./, action: "click", target: "#js-gdpr-consent-banner .js-notice-close" },
-                // DPD
-                { hostname: /./, action: "click", target: "#btnCookieOK" },
-                { hostname: /./, action: "click", target: ".cookiesOkButton" },
-                // Payback
-                { hostname: /./, action: "click", target: 'div[data-userhiddencontent-name="dsgvo"] .stripe__collapse-trigger' },
-
-                // Paypal
-                { hostname: /./, action: "click", target: "a#acceptAllButton" },
-
-                // TK.de
-                { hostname: /./, action: "click", target: '#dsgvoAccepted a[title="Cookie-Hinweis schließen"]' },
-
-                { hostname: /soundcloud.com$/, action: "remove", "target": ".announcements" },
-                { hostname: /o2online.de$/, action: "click", target: "#need-to-close-quickly-true" },
-                { hostname: /verivox.de$/, action: "click", target: ".gdpr-vx-consent-bar-button" },
-                { hostname: /telekom.de$/, action: "click", target: 'input[name="/de/telekom/phoenix/checkout/controller/CookiesPolicyFormHandler.submit"]' },
-                { hostname: /./, action: "click", target: 'button[data-gdpr-single-choice-accept]' },
-                { hostname: /./, action: "click", target: '#CybotCookiebotDialogBodyLevelButtonAccept' },
-                { hostname: /./, action: "click", target: '#cookieinfo-close' },
-                { hostname: /./, action: "click", target: '#disclaimer-cookie-accept' },
-                { hostname: /derstandard/, action: "click", target: '.js-privacywall-agree' },
-                { hostname: /./, action: "click", target: '.optanon-allow-all' },
-                { hostname: /./, action: "click", target: '.js-hide-cookie-message' },
-                { hostname: /./, action: "click", target: '.cookies-message__close' },
-                { hostname: /./, action: "click", target: '.js_gdpr_close' },
-                { hostname: /./, action: "click", target: '#acceptCookieHint' },
-                { hostname: /./, action: "click", target: '#btn-agree-cookie' },
-                { hostname: /polygon.com$/, action: "remove", target: '#privacy-consent' },
-                { hostname: /./, action: "remove", target: '.eupopup-container' },
-                { hostname: /./, action: "remove", target: '.cookie_hint' },
-                { hostname: /./, action: "remove", target: '.cookiebanner' },
-                { hostname: /./, action: "remove", target: '#cookiebanner' },
-                { hostname: /./, action: "click", target: '#cookieBarConfirm' },
-                { hostname: /./, action: "remove", target: '#cookieBar' },
-                { hostname: /./, action: "remove", target: '.cc_banner-wrapper' },
-                { hostname: /./, action: "remove", target: '#js-eu-cookie' },
-                { hostname: /./, action: "remove", target: '#AcceptCookiesBanner' },
-                { hostname: /./, action: "remove", target: '.js-CookieBanner' },
-                { hostname: /payback/, action: "remove", target: 'div[data-userhiddencontent-name="dsgvo"]' },
-                { hostname: /(stern.de)/, action: "click", target: '.guj-cb__button' },
-                { hostname: /./, action: "click", target: '#ck-close-cookie-statement' },
-                { hostname: /./, action: "remove", target: '#ck-cookie-statement' },
-                { hostname: /./, action: "remove", target: '.cc-window,.cc-banner,.cc-overlay' },
-
-                // http://cookielawinfo.com/user-guide/
-                { hostname: /./, action: "remove", target: '#cookie-law-info-bar' },
-                { hostname: /blogspot.com/, action: "remove", target: '#cookieChoiceInfo' },
-                { hostname: /sivantos/, action: "remove", target: '.cookie-confirmation' },
-                { hostname: /ikea.com$/, action: "remove", target: '#cookieMsgBlock' },
-                { hostname: /paypal.com$/, action: "remove", target: '#gdprCookieBanner' },
-                { hostname: /tk.de$/, action: "remove", target: '#dsgvoAccepted' },
-
-                { hostname: /planet.com/, action: "click", target: '.pl-cookies-cta .pl-accept' },
-
-                { hostname: /./, action: "remove", target: '#cookie-banner' },
-
-                // https://de.wordpress.org/plugins/cookie-notice/
-                { hostname: /./, action: "remove", target: "#cookie-notice" },
-
-                { hostname: /adobe/, action: "click", target: "#_evidon-accept-button" },
-                { hostname: /dict.cc/, action: "click", target: "#sncmp-popup-ok-button" },
-                { hostname: /basiszinssatz.de/, action: "remove", target: "#wrapperdiv" },
-
-                { hostname: /citroen.de/, action: 'remove', target: "#_psaihm_main_div,_psaihm_overlay" }
-            ],
-            rulesdelay: [
-                //              {hostname: /./, action: "click", target: '.cc-banner .cc-dismiss'},
-                //              {hostname: /./, action: "click", target: '.cc-window .cc-dismiss'},
-                { hostname: /./, action: "remove", target: '#cookie-banner' },
-                { hostname: /./, action: "click", target: '#cookie-consent-accept-button' },
-                { hostname: /./, action: "remove", target: ".cc_banner-wrapper" },
-
-            ]
-        }
-    };
-
-    function doClick(node, selector) {
-        var didSomething = false;
-        for (var i = 0; i < node.length; i++) {
-            if (!node[i].dataset.cookieAwayClicked) {
-                node[i].click();
-                node[i].dataset.cookieAwayClicked = true;
-                didSomething = true;
-            }
-        }
-        if (didSomething) {
-            console.log('click', selector);
-        }
-    }
-
-    function doRemove(node, selector) {
-        for (var i = 0; i < node.length; i++) {
-            node[i].remove();
-        }
-        if (node.length && selector) { console.log('remove', selector); }
-    }
-
-    function doRule(rule) {
-        if (typeof rule.hostname == 'string' && rule.hostname !== location.hostname) { return; }
-        if (typeof rule.hostname == 'object' && typeof rule.hostname.match == 'function' && !rule.hostname.match(location.hostname)) { return; }
-
-        if (rule.action == 'remove') { doRemove($$(rule.target), rule.target); }
-        if (rule.action == 'click') { doClick($$(rule.target), rule.target); }
-    }
-
-    var $$ = function(s) {
-        return document.querySelectorAll(s);
-    };
-
-    function getObject(key, defValue) {
-        var obj = window,
-            keys;
-
-        try {
-            keys = key.split('.');
-
-            for (var i = 0; i < keys.length; i++) {
-                obj = obj[keys[i]];
-            }
-        } catch (e) {
-            obj = defValue || null;
-        }
-
-        return typeof obj !== 'undefined' ? obj : defValue;
-    };
-
-    function firstCall() {
-        typeof getObject('Cookiebot.dialog.submitConsent') == 'function' && window.Cookiebot.dialog.submitConsent();
-        typeof window.hideCookieHint == 'function' && window.hideCookieHint(true);
-        typeof window.golemAcceptCookies == 'function' && window.golemAcceptCookies();
-        typeof window.CookiesOK == 'function' && window.CookiesOK();
-        typeof getObject('CookieControl.notifyAccept') == 'function' && window.CookieControl.notifyAccept();
-    }
-
-    function delayCall1() {
-        config.selectors.rules = config.selectors.rules.concat(config.selectors.rulesdelay);
-    }
-
-    function delayCall2() {}
-
-    function delayCall5() {
-        typeof window.__cmpui == 'function' && window.__cmpui("setAndSaveAllConsent", !0); // SourceForge
-
-        config.selectors.rules = config.selectors.rules.concat(config.selectors.rulesdelay);
-    }
-
-    function execute() {
-        config.selectors.rules.forEach(doRule);
-    }
-
-    setTimeout(firstCall, 100);
-    setTimeout(execute, 150);
-    setTimeout(execute, 500);
-    setTimeout(delayCall1, 1100);
-    setTimeout(execute, 2000);
-    setTimeout(delayCall2, 2100);
-    setTimeout(execute, 5000);
-    setTimeout(delayCall5, 5100);
-    setTimeout(execute, 10000);
-})();
+    // Get updated settingsData
+    sendMessageToBackground(constants.commSubjects.REQUEST.ALL_DATA, null, (response => {
+        settingsDataUpdate(response.settingsData)
+        extensionDataUpdate(response.extensionData)
+    }))
+})

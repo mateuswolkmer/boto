@@ -1,4 +1,6 @@
 // https://github.com/jasonday/color-contrast
+import colortone from './colortone'
+
 
 var contrastErrors = {
     errors: [],
@@ -26,6 +28,10 @@ var contrast = {
         return rgb;
 
     },
+    rgbToHex: function(r, g, b) {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    },
+
     // Based on http://www.w3.org/TR/WCAG20/#relativeluminancedef
     relativeLuminance: function(c) {
         var lum = [];
@@ -37,8 +43,8 @@ var contrast = {
     },
     // Based on http://www.w3.org/TR/WCAG20/#contrast-ratiodef
     contrastRatio: function(x, y) {
-        var l1 = contrast.relativeLuminance(contrast.parseRgb(x));
-        var l2 = contrast.relativeLuminance(contrast.parseRgb(y));
+        var l1 = contrast.relativeLuminance(Array.isArray(x) ? x : contrast.parseRgb(x));
+        var l2 = contrast.relativeLuminance(Array.isArray(y) ? y : contrast.parseRgb(y));
         return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
     },
 
@@ -72,6 +78,25 @@ var contrast = {
     isVisible: function(el) {
         return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
     },
+
+    // suggest a new color that fits the specified ratio
+    // Adapted from https://github.com/MarchWorks/colortone
+    suggestColor: function(color, background, desiredRatio) {
+        var backgroundLuminace = contrast.relativeLuminance(contrast.parseRgb(background));
+        // checks if the new color's luminance should be higher or lower based on the background
+        // -0.1 for darker and 0.1 for lighter
+        var colorChangeRatio = backgroundLuminace > 0.179 ? -0.1 : 0.1;
+
+        var newColor = contrast.parseRgb(color);
+        for (let i = 0; i < 20; i++) {
+            let contrastRatio = Math.round(contrast.contrastRatio(newColor, background) * 100) / 100
+            if (contrastRatio >= desiredRatio) break;
+
+            newColor = colortone([newColor[0], newColor[1], newColor[2]], colorChangeRatio);
+        }
+        return `rgb(${newColor.join(',')})`;
+    },
+
     check: function() {
         // resets results
         contrastErrors = {
@@ -137,7 +162,8 @@ var contrast = {
                                         elem: elem,
                                         ratio: ratio + ':1',
                                         detail: fontSize + "px " + fontWeight,
-                                        info: "Large scale text (greater than 18pt/24px or 14pt/18.667px bold) must have a minimum contrast ratio of 3:1"
+                                        info: "Large scale text (greater than 18pt/24px or 14pt/18.667px bold) must have a minimum contrast ratio of 3:1",
+                                        suggestedColor: contrast.suggestColor(color, background, 3)
                                     }
                                     contrastErrors.errors.push(error);
                                 }
@@ -147,7 +173,8 @@ var contrast = {
                                         elem: elem,
                                         ratio: ratio + ':1',
                                         detail: fontSize + "px " + fontWeight,
-                                        info: "Normal body text (less than 18pt/24px or 14pt/18.667px bold) must have a minimum contrast ratio of 4.5:1"
+                                        info: "Normal body text (less than 18pt/24px or 14pt/18.667px bold) must have a minimum contrast ratio of 4.5:1",
+                                        suggestedColor: contrast.suggestColor(color, background, 4.5)
                                     }
                                     contrastErrors.errors.push(error);
                                 }

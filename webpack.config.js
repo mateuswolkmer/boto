@@ -16,7 +16,6 @@ module.exports = {
     entry: {
         contentscript: join(__dirname, 'src/contentscript/contentscript.js'),
         background: join(__dirname, 'src/background/background.js'),
-        axs_testing: join(__dirname, 'src/contentscript/axs_testing.js'),
     },
     output: {
         path: join(__dirname, 'dist'),
