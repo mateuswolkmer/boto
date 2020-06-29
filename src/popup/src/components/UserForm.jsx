@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Icon, Select, TextField, FormControl, Checkbox } from 'bold-ui'
+import { Button, Icon, Select, TextField } from 'bold-ui'
 import * as constants from '../utils/Constants'
 
 const UserForm = ({ 
@@ -10,7 +10,7 @@ const UserForm = ({
 }) => {
     
     const [currentStep, setCurrentStep] = useState(-1)
-    const steps = 6;
+    const steps = 5;
 
     const increaseStep = () => setCurrentStep(currentStep + 1)
     const decreaseStep = () => setCurrentStep(currentStep - 1)
@@ -95,7 +95,7 @@ const UserForm = ({
                                     <span class='user-form_field-tip'>Sei como é difícil navegar em sites cheios de informações com essas condições e irei te ajudar reduzindo-as, além de ampliar o que realmente importa</span>
                                 </>
                             }
-                            { currentStep == 4 &&
+                            {/* { currentStep == 4 &&
                                 <>
                                     <Select
                                         label='Você possui algum tipo de daltonismo?'
@@ -107,8 +107,8 @@ const UserForm = ({
                                         name='daltonism' /> 
                                     <span class='user-form_field-tip'>Irei aplicar um filtro de cores especial para você caso possua algum tipo de daltonismo</span>
                                 </>
-                            }
-                            { currentStep == 5 &&
+                            } */}
+                            { currentStep == 4 &&
                                 <>
                                     <Select
                                         label='Qual sua mão predominante?'
@@ -173,15 +173,15 @@ const UserForm = ({
                     itemToString={item => item}
                     clearable={false}
                     name='cognitiveDeficiency' /> 
-                <Select
+                {/* <Select
                     label='Daltonismo (em desenvolvimento)'
                     items={Object.values(constants.daltonismTypes)}
                     value={userData.daltonism}
                     onChange={handleChange('daltonism')}
                     itemToString={item => item}
-                    clearable={false} />
+                    clearable={false} /> */}
                 <Select
-                    label='Mão predominante (em desenvolvimento)'
+                    label='Mão predominante'
                     items={Object.values(constants.handednessTypes)}
                     value={userData.handedness}
                     onChange={handleChange('handedness')}

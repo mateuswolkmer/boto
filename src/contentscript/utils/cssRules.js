@@ -4,10 +4,9 @@ export const removeElementCursorRule = () => (
     }`
 )
 
-export const fontSizeRule = (fontSize, letterSpacing, lineHeight) => ( // font-size: ${fontSize}% !important;
+export const fontSizeRule = (fontSize, letterSpacing, lineHeight) => ( // font-size: ${fontSize}% !important; line-height: ${lineHeight}rem !important;
     `body { 
-        letter-spacing: ${letterSpacing}rem !important;
-        line-height: ${lineHeight}rem !important;
+        letter-spacing: ${letterSpacing}rem !important;        
     }`
 )
 
