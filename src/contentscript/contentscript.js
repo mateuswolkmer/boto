@@ -69,9 +69,6 @@ function settingsDataUpdate(newSettingsData) {
         if (newSettingsData.options.fontSize === 0)
             removeStyleRuleNode(botoStylesheet, fontSizeRuleNode)
         else {
-            // let newFontSize = newSettingsData.options.fontSize + 100
-            // let newLetterSpacing = newSettingsData.options.fontSize < 1 ? 0 : (newSettingsData.options.fontSize * 2 / 100)
-            // let newLineHeight = (newSettingsData.options.fontSize * 3 / 10) < 1.5 ? 1.5 : (newSettingsData.options.fontSize * 3 / 10)
             let newFontSize = newSettingsData.options.fontSize + 100
             let newLetterSpacing = newSettingsData.options.fontSize < 1 ? 0 : (newSettingsData.options.fontSize / 300)
             let newLineHeight = (newSettingsData.options.fontSize * 3 / 10) < 1.5 ? 1.5 : (newSettingsData.options.fontSize / 10)

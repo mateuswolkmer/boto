@@ -66,7 +66,7 @@ const UserForm = ({
                                         value={userData.age}
                                         onChange={handleChange('age')}
                                         clearable={false} /> 
-                                    <span class='user-form_field-tip'>A sua idade irá influenciar o quanto eu aumento os elementos da tela e diminúo a quantidade de informação</span>
+                                    <span class='user-form_field-tip'>A sua idade irá influenciar o quanto eu aumento os elementos da tela e diminuo a quantidade de informação</span>
                                 </>        
                             }
                             { currentStep == 2 &&

@@ -69,7 +69,7 @@ export const defaultSettingsData = {
 }
 export const defaultExtensionData = {
     autoFixElements: true,
-    acceptCookies: true
+    acceptCookies: false
 }
 
 /// POPUP ONLY

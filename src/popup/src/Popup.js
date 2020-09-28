@@ -131,11 +131,6 @@ function Popup() {
 
         if(userData.age < 0 || userData.age > 150)
             setUserData({...userData, age: ''})
-        
-        if(userData.age && userData.age > 60)
-            setNoiseValue([constants.noiseTypes.ADS, constants.noiseTypes.COOKIES])
-        if(userData.autisticOrDislexic === 'yes')
-            setNoiseValue([constants.noiseTypes.ADS, constants.noiseTypes.COOKIES, constants.noiseTypes.IMAGES])
 
         if(popupInitialized && !formActive && !popupUpdating) updateUserDataMessage()
     }, [formActive, userData])
@@ -173,7 +168,7 @@ function Popup() {
                                 minusIcon='minimize' plusIcon='expand'/>
                             <OptionsItem label='Esconder elementos' type={constants.optionsItemTypes.MULTISELECT} 
                                 value={noiseValue} valueSetter={setNoiseValue} selectItems={Object.values(constants.noiseTypes)} />
-                            <OptionsItem label='Esconda elemento específico' type={constants.optionsItemTypes.CUSTOM}>
+                            <OptionsItem label='Esconder elemento específico' type={constants.optionsItemTypes.CUSTOM}>
                                 <Button size='small' onClick={hideNextElement}><Icon icon='penTool'/> Iniciar seleção</Button>
                                 <Button size='small' kind='primary' skin='outline' onClick={resetHiddenElements}>Restaurar</Button>
                             </OptionsItem>
@@ -200,7 +195,8 @@ function Popup() {
                     }
 
                     <section className='footer'>
-                        <a href='#' target='_blank' className='footer_logo'>Boto<img src={logo}/></a>
+                        <span className='footer_logo'>Boto<img src={logo}/></span>
+                        {/* <a href='#' target='_blank' className='footer_logo'>Boto<img src={logo}/></a> */}
                         {/* <span className='footer_links'>
                             <Link title='Ajuda' href='#'>Ajuda</Link>
                             <Link title='Privacidade' href='#'>Privacidade</Link>
