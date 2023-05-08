@@ -16,12 +16,25 @@ const UserForm = ({
     const decreaseStep = () => setCurrentStep(currentStep - 1)
 
     const handleChange = (newValue) => (e) => {
-        const el = e.target ? e.target : e
-        setUserData({
-          ...userData,
-          [newValue]: el.type ? (el.type === 'checkbox' ? el.checked : el.value) : el,
-        })
-      }
+        if (e) {
+            const el = e.target ? e.target : e
+            setUserData({
+                ...userData,
+                [newValue]: el.type ? (el.type === 'checkbox' ? el.checked : el.value) : el,
+            })
+        }
+    }
+
+    const handleKeyPress = event => {
+        if (event.key === "Enter" || event.key === "NumpadEnter") {
+            event.preventDefault()
+            if (currentStep < steps-1) {
+                increaseStep()
+            } else {
+                setFormActive(false)
+            }
+        }
+    }
 
     return (
         !profileForm &&
@@ -36,7 +49,7 @@ const UserForm = ({
                             <span>Farei algumas rápidas perguntas para te conhecer melhor e definir uma boa configuração inicial para você, tudo bem?</span>
                             <div className='user-form_welcome-buttons'>
                                 <Button kind='primary' skin='outline' onClick={() => setFormActive(false)}>Pular</Button>
-                                <Button kind='primary' onClick={increaseStep}>Iniciar</Button>
+                                <Button kind='primary' onClick={increaseStep} autoFocus>Iniciar</Button>
                             </div>
                         </div>
                     </>
@@ -51,8 +64,9 @@ const UserForm = ({
                                         label='Qual o seu nome?'
                                         placeholder='Digite o seu nome'
                                         value={userData.name}
-                                        onChange={handleChange('name')} 
-                                        clearable={false} /> 
+                                        onChange={handleChange('name')}
+                                        onKeyPress={handleKeyPress}
+                                        autoFocus />
                                     <span class='user-form_field-tip'>O seu nome serve apenas para eu saber como saudá-lo</span>
                                 </>
                             }
@@ -65,7 +79,8 @@ const UserForm = ({
                                         placeholder='Digite a sua idade'
                                         value={userData.age}
                                         onChange={handleChange('age')}
-                                        clearable={false} /> 
+                                        onKeyPress={handleKeyPress}
+                                        autoFocus />
                                     <span class='user-form_field-tip'>A sua idade irá influenciar o quanto eu aumento os elementos da tela e diminuo a quantidade de informação</span>
                                 </>        
                             }
@@ -76,9 +91,11 @@ const UserForm = ({
                                         items={Object.values(constants.sightDeficiencyTypes)}
                                         value={userData.sightDeficiency}
                                         onChange={handleChange('sightDeficiency')}
+                                        onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='sightDeficiency' /> 
+                                        name='sightDeficiency'
+                                        autoFocus />
                                     <span class='user-form_field-tip'>Caso possua alguma deficiência de visão, irei te ajudar ampliando todos os textos e demais elementos</span>
                                 </>
                             }
@@ -89,9 +106,11 @@ const UserForm = ({
                                         items={Object.values(constants.cognitiveDeficiencyTypes)}
                                         value={userData.cognitiveDeficiency}
                                         onChange={handleChange('cognitiveDeficiency')}
+                                        onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='cognitiveDeficiency' /> 
+                                        name='cognitiveDeficiency'
+                                        autoFocus />
                                     <span class='user-form_field-tip'>Sei como é difícil navegar em sites cheios de informações com essas condições e irei te ajudar reduzindo-as, além de ampliar o que realmente importa</span>
                                 </>
                             }
@@ -102,9 +121,11 @@ const UserForm = ({
                                         items={Object.values(constants.daltonismTypes)}
                                         value={userData.daltonism}
                                         onChange={handleChange('daltonism')}
+                                        onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='daltonism' /> 
+                                        name='daltonism'
+                                        autoFocus />
                                     <span class='user-form_field-tip'>Irei aplicar um filtro de cores especial para você caso possua algum tipo de daltonismo</span>
                                 </>
                             } */}
@@ -115,9 +136,11 @@ const UserForm = ({
                                         items={Object.values(constants.handednessTypes)}
                                         value={userData.handedness}
                                         onChange={handleChange('handedness')}
+                                        onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='handedness' /> 
+                                        name='handedness'
+                                        autoFocus />
                                     <span class='user-form_field-tip'>Alguns elementos da tela poderão ser adaptados para o lado da sua mão predominante</span>
                                 </>
                             }                
@@ -133,7 +156,7 @@ const UserForm = ({
                             <Button size='small' onClick={decreaseStep} disabled={currentStep === 0}><Icon icon='angleLeft'/>Voltar</Button>
                             <span>{currentStep + 1} / {steps}</span>
                             { currentStep < steps-1 &&
-                                <Button kind='primary' skin='outline' size='small' onClick={increaseStep}>Avançar<Icon icon='angleRight'/></Button> 
+                                <Button kind='primary' skin='outline' size='small' onClick={increaseStep}>Avançar<Icon icon='angleRight'/></Button>
                                 ||
                                 <Button kind='primary' size='small' onClick={() => setFormActive(false)}>Finalizar<Icon icon='checkDefault'/></Button>
                             }
