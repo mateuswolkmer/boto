@@ -22,6 +22,7 @@ function Popup() {
         window.close()
     }
     const resetHiddenElements = () => sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.RESET)
+    const stopHideNextElement = () => sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.STOP_HIDE_NEXT)
 
     const requestAllDataMessage = (callback) => sendMessageToBackground(constants.commSubjects.REQUEST.ALL_DATA, null, callback)
     const updateSettingsDataMessage = () => {
@@ -113,6 +114,7 @@ function Popup() {
             extensionDataToState(response.extensionData)
             setUserData(response.userData)
             setPopupInitialized(true)
+            stopHideNextElement()
         })
     }, [])
 
@@ -138,7 +140,7 @@ function Popup() {
     return (
         <ThemeProvider theme={botoTheme}>
             {  formActive && <UserForm userData={userData} setUserData={setUserData} setFormActive={setFormActive} /> }
-            { !formActive && 
+            { !formActive &&
                 <main>
                     <section className='header'>
                         <h1 className='header_greetings'>Olá{userData.name && ','} {userData.name.split(' ')[0]}</h1>
@@ -154,25 +156,25 @@ function Popup() {
 
                     { activeTab === constants.tabs.INTERFACE &&
                         <section className='body body-interface'>
-                            <OptionsItem label='Brilho' type={constants.optionsItemTypes.SLIDER} 
+                            <OptionsItem label='Brilho' type={constants.optionsItemTypes.SLIDER}
                                 value={brightnessValue} valueSetter={setBrightnessValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
                                 minusIcon='desktopFilled' plusIcon='desktopOutline'/>
-                            <OptionsItem label='Contraste' type={constants.optionsItemTypes.SLIDER} 
+                            <OptionsItem label='Contraste' type={constants.optionsItemTypes.SLIDER}
                                 value={contrastValue} valueSetter={setContrastValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
                                 minusIcon='contrastActive' plusIcon='contrast'/>
-                            <OptionsItem label='Zoom' type={constants.optionsItemTypes.SLIDER} 
+                            <OptionsItem label='Zoom' type={constants.optionsItemTypes.SLIDER}
                                 value={zoomValue} valueSetter={setZoomValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
                                 minusIcon='zoomMinusOutline' plusIcon='zoomPlusOutline'/>
-                            <OptionsItem label='Espaçamento' type={constants.optionsItemTypes.SLIDER} 
+                            <OptionsItem label='Espaçamento' type={constants.optionsItemTypes.SLIDER}
                                 value={fontSizeValue} valueSetter={setFontSizeValue} sliderStep={5} displayValueConversor={(value) => value}
                                 minusIcon='minimize' plusIcon='expand'/>
-                            <OptionsItem label='Esconder elementos' type={constants.optionsItemTypes.MULTISELECT} 
+                            <OptionsItem label='Esconder elementos' type={constants.optionsItemTypes.MULTISELECT}
                                 value={noiseValue} valueSetter={setNoiseValue} selectItems={Object.values(constants.noiseTypes)} />
                             <OptionsItem label='Esconder elemento específico' type={constants.optionsItemTypes.CUSTOM}>
                                 <Button size='small' onClick={hideNextElement}><Icon icon='penTool'/> Iniciar seleção</Button>
-                                <Button size='small' kind='primary' skin='outline' onClick={resetHiddenElements}>Restaurar</Button>
+                                <Button size='small' kind='primary' skin='outline' onClick={resetHiddenElements}>Restaurar seleção</Button>
                             </OptionsItem>
-                            {/* <OptionsItem label='Daltonismo' type={constants.optionsItemTypes.SELECT} 
+                            {/* <OptionsItem label='Daltonismo' type={constants.optionsItemTypes.SELECT}
                                 value={daltonismValue} valueSetter={setDaltonismValue} selectItems={Object.values(constants.daltonismTypes)} /> */}
                         </section>
                     }
@@ -182,13 +184,13 @@ function Popup() {
                         </section>
                     }
                     { activeTab === constants.tabs.EXTENSION &&
-                        <section className='body body-extension'> 
+                        <section className='body body-extension'>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
-                                <Checkbox label='Adaptar automaticamente elementos de baixa acessibilidade' 
+                                <Checkbox label='Adaptar automaticamente elementos de baixa acessibilidade'
                                     checked={autoFixElementsValue} onChange={e => setAutoFixElementsValue(e.target.checked)} />
                             </OptionsItem>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
-                                <Checkbox label='Aceitar automaticamente todas as solicitações de uso de "cookies"' 
+                                <Checkbox label='Aceitar automaticamente todas as solicitações de uso de "cookies"'
                                     checked={acceptCookiesValue} onChange={e => setAcceptCookiesValue(e.target.checked)} />
                             </OptionsItem>
                         </section>
@@ -203,7 +205,7 @@ function Popup() {
                             <Link title='Contribua' href='#'>Contribua</Link>
                         </span> */}
                     </section>
-                </main>    
+                </main>
             }
         </ThemeProvider>
     );
