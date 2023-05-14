@@ -91,20 +91,31 @@ function Popup() {
     // Extension
     const [autoFixElementsValue, setAutoFixElementsValue] = useState(true)
     const [acceptCookiesValue, setAcceptCookiesValue] = useState(true)
+    const [turnExtensionBiggerValue, setTurnExtensionBiggerValue] = useState(true)
 
     const extensionDataToState = (extensionData) => {
         if(extensionData) {
             setPopupUpdating(true)
             setAutoFixElementsValue(extensionData.autoFixElements)
             setAcceptCookiesValue(extensionData.acceptCookies)
+            setTurnExtensionBiggerValue(extensionData.turnExtensionBigger)
             setPopupUpdating(false)
         }
     }
     const stateToExtensionData = () => {
         return ({
             autoFixElements: autoFixElementsValue,
-            acceptCookies: acceptCookiesValue
+            acceptCookies: acceptCookiesValue,
+            turnExtensionBigger: turnExtensionBiggerValue
         })
+    }
+
+    const extensionZoom = (turnExtensionBiggerValue) => {
+        if(turnExtensionBiggerValue) {
+            return constants.extensionZoom.ZOOMED
+        } else {
+            return constants.extensionZoom.DEFAULT
+        }
     }
 
     // When initializing, load all data
@@ -124,7 +135,7 @@ function Popup() {
 
     useEffect(() => {
         if(popupInitialized && !popupUpdating) updateExtensionDataMessage()
-    }, [autoFixElementsValue, acceptCookiesValue])
+    }, [autoFixElementsValue, acceptCookiesValue, turnExtensionBiggerValue])
 
     // Validates the userData
     useEffect(() => {
@@ -141,7 +152,7 @@ function Popup() {
         <ThemeProvider theme={botoTheme}>
             {  formActive && <UserForm userData={userData} setUserData={setUserData} setFormActive={setFormActive} /> }
             { !formActive &&
-                <main>
+                <main style={{zoom: extensionZoom(turnExtensionBiggerValue)}}>
                     <section className='header'>
                         <h1 className='header_greetings'>Olá{userData.name && ','} {userData.name.split(' ')[0]}</h1>
                     </section>
@@ -188,6 +199,10 @@ function Popup() {
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
                                 <Checkbox label='Adaptar automaticamente elementos de baixa acessibilidade'
                                     checked={autoFixElementsValue} onChange={e => setAutoFixElementsValue(e.target.checked)} />
+                            </OptionsItem>
+                            <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
+                                <Checkbox label='Aumentar o tamanho da extensão para melhor visualização'
+                                    checked={turnExtensionBiggerValue} onChange={e => setTurnExtensionBiggerValue(e.target.checked)} />
                             </OptionsItem>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
                                 <Checkbox label='Aceitar automaticamente todas as solicitações de uso de "cookies"'

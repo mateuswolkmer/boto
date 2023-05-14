@@ -69,5 +69,6 @@ export const defaultSettingsData = {
 }
 export const defaultExtensionData = {
     autoFixElements: true,
-    acceptCookies: false
+    acceptCookies: false,
+    turnExtensionBigger: false
 }

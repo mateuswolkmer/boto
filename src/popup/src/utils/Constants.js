@@ -70,7 +70,8 @@ export const defaultSettingsData = {
 }
 export const defaultExtensionData = {
     autoFixElements: true,
-    acceptCookies: false
+    acceptCookies: false,
+    turnExtensionBigger: false
 }
 
 /// POPUP ONLY
@@ -85,4 +86,9 @@ export const optionsItemTypes = {
     SELECT: 'select',
     MULTISELECT: 'multiselect',
     CUSTOM: 'custom'
+}
+
+export const extensionZoom = {
+    DEFAULT: '100%',
+    ZOOMED: '110%'
 }
