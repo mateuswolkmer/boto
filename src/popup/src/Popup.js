@@ -63,6 +63,7 @@ function Popup() {
     const [fontSizeValue, setFontSizeValue] = useState(50)    
     const [noiseValue, setNoiseValue] = useState([])
     const [daltonismValue, setDaltonismValue] = useState(constants.daltonismTypes.NO)
+    const [autoClickOnHoverValue, setAutoClickOnHoverValue] = useState(false)
     const [turnExtensionBiggerValue, setTurnExtensionBiggerValue] = useState(false)
 
     const settingsDataToState = (settingsData) => {
@@ -76,6 +77,7 @@ function Popup() {
                 setFontSizeValue(settingsData.options.fontSize)
                 setNoiseValue(settingsData.options.noise)
                 setDaltonismValue(settingsData.options.daltonism)
+                setAutoClickOnHoverValue(settingsData.options.autoClickOnHover)
                 setTurnExtensionBiggerValue(settingsData.options.turnExtensionBigger)
             }
             setPopupUpdating(false)
@@ -91,6 +93,7 @@ function Popup() {
                 fontSize: fontSizeValue,
                 noise: noiseValue,
                 daltonism: daltonismValue,
+                autoClickOnHover: autoClickOnHoverValue,
                 turnExtensionBigger: turnExtensionBiggerValue
             }
         })
@@ -131,7 +134,7 @@ function Popup() {
 
     useEffect(() => {
         if(popupInitialized && !popupUpdating) updateSettingsDataMessage()
-    }, [formActive, brightnessValue, contrastValue, fontSizeValue, zoomValue, noiseValue, daltonismValue, turnExtensionBiggerValue])
+    }, [formActive, brightnessValue, contrastValue, fontSizeValue, zoomValue, noiseValue, daltonismValue, autoClickOnHoverValue, turnExtensionBiggerValue])
 
     useEffect(() => {
         if(popupInitialized && !popupUpdating) updateExtensionDataMessage()
@@ -199,6 +202,10 @@ function Popup() {
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
                                 <Checkbox label='Adaptar automaticamente elementos de baixa acessibilidade'
                                     checked={autoFixElementsValue} onChange={e => setAutoFixElementsValue(e.target.checked)} />
+                            </OptionsItem>
+                            <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
+                                <Checkbox label='Interagir com links e botões após 3s com o cursor parado em cima deles'
+                                    checked={autoClickOnHoverValue} onChange={e => setAutoClickOnHoverValue(e.target.checked)} />
                             </OptionsItem>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
                                 <Checkbox label='Aumentar o tamanho da extensão para melhor visualização'

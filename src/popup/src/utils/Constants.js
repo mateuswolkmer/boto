@@ -66,6 +66,7 @@ export const defaultSettingsData = {
         fontSize: 0,
         noise: [],
         daltonism: daltonismTypes.NO,
+        autoClickOnHover: false,
         turnExtensionBigger: false
     }
 }

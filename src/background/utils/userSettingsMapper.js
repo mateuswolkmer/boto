@@ -18,7 +18,7 @@ export function map(settingsData, userData) {
     else
         newSettingsData.options.contrast = 0
 
-    // Zoom & turnExtensionBigger
+    // Zoom & Turn Extension Bigger
     if (userData.age >= 70 ||
         userData.sightDeficiency === constants.sightDeficiencyTypes.MAJOR ||
         userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.SEVERE) {
@@ -57,6 +57,13 @@ export function map(settingsData, userData) {
 
     // Daltonism
     newSettingsData.options.daltonism = userData.daltonism
+
+    // Auto Click On Hover
+    if (userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.SEVERE ||
+        userData.age >= 70)
+        newSettingsData.options.autoClickOnHover = true
+    else
+        newSettingsData.options.autoClickOnHover = false
 
     return newSettingsData
 }
