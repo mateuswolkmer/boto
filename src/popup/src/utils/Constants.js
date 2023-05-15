@@ -65,13 +65,13 @@ export const defaultSettingsData = {
         zoom: 0,
         fontSize: 0,
         noise: [],
-        daltonism: daltonismTypes.NO
+        daltonism: daltonismTypes.NO,
+        turnExtensionBigger: false
     }
 }
 export const defaultExtensionData = {
     autoFixElements: true,
-    acceptCookies: false,
-    turnExtensionBigger: false
+    acceptCookies: false
 }
 
 /// POPUP ONLY

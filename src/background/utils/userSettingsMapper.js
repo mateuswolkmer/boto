@@ -18,18 +18,22 @@ export function map(settingsData, userData) {
     else
         newSettingsData.options.contrast = 0
 
-    // Zoom
+    // Zoom & turnExtensionBigger
     if (userData.age >= 70 ||
         userData.sightDeficiency === constants.sightDeficiencyTypes.MAJOR ||
-        userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.SEVERE)
+        userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.SEVERE) {
         newSettingsData.options.zoom = 20 // 40
-    else if (
+        newSettingsData.options.turnExtensionBigger = true
+    } else if (
         userData.age >= 45 ||
         userData.sightDeficiency === constants.sightDeficiencyTypes.MINOR ||
-        userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.MILD)
+        userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.MILD) {
         newSettingsData.options.zoom = 10 // 20
-    else
+        newSettingsData.options.turnExtensionBigger = true
+    } else {
         newSettingsData.options.zoom = 0
+        newSettingsData.options.turnExtensionBigger = false
+    }
 
     // Font Size
     if (userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.SEVERE)

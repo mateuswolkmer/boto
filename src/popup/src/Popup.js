@@ -43,6 +43,14 @@ function Popup() {
         })
     }
 
+    const extensionZoom = (turnExtensionBiggerValue) => {
+        if(turnExtensionBiggerValue) {
+            return constants.extensionZoom.ZOOMED
+        } else {
+            return constants.extensionZoom.DEFAULT
+        }
+    }
+
     const [popupInitialized, setPopupInitialized] = useState(false)
     const [popupUpdating, setPopupUpdating] = useState(false)
     const [formActive, setFormActive] = useState(false)
@@ -55,6 +63,7 @@ function Popup() {
     const [fontSizeValue, setFontSizeValue] = useState(50)    
     const [noiseValue, setNoiseValue] = useState([])
     const [daltonismValue, setDaltonismValue] = useState(constants.daltonismTypes.NO)
+    const [turnExtensionBiggerValue, setTurnExtensionBiggerValue] = useState(false)
 
     const settingsDataToState = (settingsData) => {
         if(settingsData) {
@@ -67,6 +76,7 @@ function Popup() {
                 setFontSizeValue(settingsData.options.fontSize)
                 setNoiseValue(settingsData.options.noise)
                 setDaltonismValue(settingsData.options.daltonism)
+                setTurnExtensionBiggerValue(settingsData.options.turnExtensionBigger)
             }
             setPopupUpdating(false)
         }
@@ -80,7 +90,8 @@ function Popup() {
                 zoom: zoomValue - 50,
                 fontSize: fontSizeValue,
                 noise: noiseValue,
-                daltonism: daltonismValue
+                daltonism: daltonismValue,
+                turnExtensionBigger: turnExtensionBiggerValue
             }
         })
     }
@@ -91,31 +102,20 @@ function Popup() {
     // Extension
     const [autoFixElementsValue, setAutoFixElementsValue] = useState(true)
     const [acceptCookiesValue, setAcceptCookiesValue] = useState(true)
-    const [turnExtensionBiggerValue, setTurnExtensionBiggerValue] = useState(true)
 
     const extensionDataToState = (extensionData) => {
         if(extensionData) {
             setPopupUpdating(true)
             setAutoFixElementsValue(extensionData.autoFixElements)
             setAcceptCookiesValue(extensionData.acceptCookies)
-            setTurnExtensionBiggerValue(extensionData.turnExtensionBigger)
             setPopupUpdating(false)
         }
     }
     const stateToExtensionData = () => {
         return ({
             autoFixElements: autoFixElementsValue,
-            acceptCookies: acceptCookiesValue,
-            turnExtensionBigger: turnExtensionBiggerValue
+            acceptCookies: acceptCookiesValue
         })
-    }
-
-    const extensionZoom = (turnExtensionBiggerValue) => {
-        if(turnExtensionBiggerValue) {
-            return constants.extensionZoom.ZOOMED
-        } else {
-            return constants.extensionZoom.DEFAULT
-        }
     }
 
     // When initializing, load all data
@@ -131,11 +131,11 @@ function Popup() {
 
     useEffect(() => {
         if(popupInitialized && !popupUpdating) updateSettingsDataMessage()
-    }, [formActive, brightnessValue, contrastValue, fontSizeValue, zoomValue, noiseValue, daltonismValue])
+    }, [formActive, brightnessValue, contrastValue, fontSizeValue, zoomValue, noiseValue, daltonismValue, turnExtensionBiggerValue])
 
     useEffect(() => {
         if(popupInitialized && !popupUpdating) updateExtensionDataMessage()
-    }, [autoFixElementsValue, acceptCookiesValue, turnExtensionBiggerValue])
+    }, [autoFixElementsValue, acceptCookiesValue])
 
     // Validates the userData
     useEffect(() => {
