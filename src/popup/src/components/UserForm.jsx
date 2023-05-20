@@ -10,7 +10,7 @@ const UserForm = ({
 }) => {
     
     const [currentStep, setCurrentStep] = useState(-1)
-    const steps = 5;
+    const steps = 6;
 
     const increaseStep = () => setCurrentStep(currentStep + 1)
     const decreaseStep = () => setCurrentStep(currentStep - 1)
@@ -67,7 +67,7 @@ const UserForm = ({
                                         onChange={handleChange('name')}
                                         onKeyPress={handleKeyPress}
                                         autoFocus />
-                                    <span class='user-form_field-tip'>O seu nome serve apenas para eu saber como saudá-lo</span>
+                                    <span class='user-form_field-tip'>O seu nome servirá para eu possa saudá-lo</span>
                                 </>
                             }
                             { currentStep == 1 &&
@@ -81,7 +81,7 @@ const UserForm = ({
                                         onChange={handleChange('age')}
                                         onKeyPress={handleKeyPress}
                                         autoFocus />
-                                    <span class='user-form_field-tip'>A sua idade irá influenciar o quanto eu aumento os elementos da tela e diminuo a quantidade de informação</span>
+                                    <span class='user-form_field-tip'>A sua idade irá influenciar em quanto irei aumentar os elementos da tela e diminuir a quantidade de informação</span>
                                 </>        
                             }
                             { currentStep == 2 &&
@@ -102,6 +102,21 @@ const UserForm = ({
                             { currentStep == 3 &&
                                 <>
                                     <Select
+                                        label='Você possui dificuldade de mover as mãos ou movimentar os dedos?'
+                                        items={Object.values(constants.motorDeficiencyTypes)}
+                                        value={userData.motorDeficiency}
+                                        onChange={handleChange('motorDeficiency')}
+                                        onKeyPress={handleKeyPress}
+                                        itemToString={item => item}
+                                        clearable={false}
+                                        name='motorDeficiency'
+                                        autoFocus />
+                                    <span class='user-form_field-tip'>Caso possua qualquer dificuldade, mesmo que seja temporária, irei te ajudar realizando cliques automáticamente após 3s com o cursor parado em cima do elemento desejado</span>
+                                </>
+                            }
+                            { currentStep == 4 &&
+                                <>
+                                    <Select
                                         label='Você possui alguma deficiência cognitiva?'
                                         items={Object.values(constants.cognitiveDeficiencyTypes)}
                                         value={userData.cognitiveDeficiency}
@@ -114,7 +129,7 @@ const UserForm = ({
                                     <span class='user-form_field-tip'>Sei como é difícil navegar em sites cheios de informações com essas condições e irei te ajudar reduzindo-as, além de ampliar o que realmente importa</span>
                                 </>
                             }
-                            {/* { currentStep == 4 &&
+                            {/* { currentStep == 5 &&
                                 <>
                                     <Select
                                         label='Você possui algum tipo de daltonismo?'
@@ -129,7 +144,7 @@ const UserForm = ({
                                     <span class='user-form_field-tip'>Irei aplicar um filtro de cores especial para você caso possua algum tipo de daltonismo</span>
                                 </>
                             } */}
-                            { currentStep == 4 &&
+                            { currentStep == 5 &&
                                 <>
                                     <Select
                                         label='Qual sua mão predominante?'
@@ -143,7 +158,7 @@ const UserForm = ({
                                         autoFocus />
                                     <span class='user-form_field-tip'>Alguns elementos da tela poderão ser adaptados para o lado da sua mão predominante</span>
                                 </>
-                            }                
+                            }
                         </div>
                         {/* <div className="user-form_stepper">
                             <Stepper>
@@ -163,31 +178,40 @@ const UserForm = ({
                         </div>
                     </> 
                 }
-            </main> 
+            </main>
             ||            
             <main className='user-form user-form-profile'>
                 <TextField
-                    name='name'
                     label='Nome'
-                    placeholder='Digite o seu nome'
+                    placeholder='Nome'
                     value={userData.name}
                     onChange={handleChange('name')}
-                    clearable={false} /> 
+                    clearable={false}
+                    name='name' />
                 <TextField
-                    name='age'
                     label='Idade'
                     type='number'
-                    placeholder='Digite a sua idade'
+                    placeholder='Idade'
                     value={userData.age}
                     onChange={handleChange('age')}
-                    clearable={false} />
+                    clearable={false}
+                    name='age' />
                 <Select
                     label='Deficiência visual'
                     items={Object.values(constants.sightDeficiencyTypes)}
                     value={userData.sightDeficiency}
                     onChange={handleChange('sightDeficiency')}
                     itemToString={item => item}
-                    clearable={false} />
+                    clearable={false}
+                    name='sightDeficiency' />
+                <Select
+                    label='Deficiência motora (mãos)'
+                    items={Object.values(constants.motorDeficiencyTypes)}
+                    value={userData.motorDeficiency}
+                    onChange={handleChange('motorDeficiency')}
+                    itemToString={item => item}
+                    clearable={false}
+                    name='motorDeficiency' />
                 <Select
                     label='Deficiência cognitiva'
                     items={Object.values(constants.cognitiveDeficiencyTypes)}
@@ -202,7 +226,8 @@ const UserForm = ({
                     value={userData.daltonism}
                     onChange={handleChange('daltonism')}
                     itemToString={item => item}
-                    clearable={false} /> */}
+                    clearable={false}
+                    name='daltonism' /> */}
                 <Select
                     label='Mão predominante'
                     items={Object.values(constants.handednessTypes)}

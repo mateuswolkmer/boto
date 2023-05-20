@@ -27,7 +27,8 @@ export function map(settingsData, userData) {
     } else if (
         userData.age >= 45 ||
         userData.sightDeficiency === constants.sightDeficiencyTypes.MINOR ||
-        userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.MILD) {
+        userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.MILD ||
+        userData.motorDeficiency === constants.motorDeficiencyTypes.SEVERE) {
         newSettingsData.options.zoom = 10 // 20
         newSettingsData.options.turnExtensionBigger = true
     } else {
@@ -59,7 +60,8 @@ export function map(settingsData, userData) {
     newSettingsData.options.daltonism = userData.daltonism
 
     // Auto Click On Hover
-    if (userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.SEVERE ||
+    if (userData.motorDeficiency === constants.motorDeficiencyTypes.SEVERE ||
+        userData.motorDeficiency === constants.motorDeficiencyTypes.MILD ||
         userData.age >= 70)
         newSettingsData.options.autoClickOnHover = true
     else

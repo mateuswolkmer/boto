@@ -204,7 +204,7 @@ function Popup() {
                                     checked={autoFixElementsValue} onChange={e => setAutoFixElementsValue(e.target.checked)} />
                             </OptionsItem>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
-                                <Checkbox label='Interagir com links e botões após 3s com o cursor parado em cima deles'
+                                <Checkbox label='Realizar clique automático após 3s com o cursor parado'
                                     checked={autoClickOnHoverValue} onChange={e => setAutoClickOnHoverValue(e.target.checked)} />
                             </OptionsItem>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>

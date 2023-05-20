@@ -42,6 +42,11 @@ export const sightDeficiencyTypes = {
     MINOR: 'Um pouco',
     MAJOR: 'Bastante'
 }
+export const motorDeficiencyTypes = {
+    NO: 'Não',
+    MILD: 'Leve',
+    SEVERE: 'Severa'
+}
 export const cognitiveDeficiencyTypes = {
     NO: 'Não',
     MILD: 'Leve',
@@ -52,6 +57,7 @@ export const defaultUserData = {
     name: '',
     age: '',
     sightDeficiency: sightDeficiencyTypes.NO,
+    motorDeficiency: motorDeficiencyTypes.NO,
     cognitiveDeficiency: cognitiveDeficiencyTypes.NO,
     daltonism: daltonismTypes.NO,
     handedness: handednessTypes.RIGHT
