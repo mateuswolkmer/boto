@@ -3,11 +3,35 @@ import * as userSettingsMapper from './utils/userSettingsMapper'
 
 console.log('background: loaded')
 
+// Convert Object into string JSON
+function objToJson(obj) {
+  return JSON.stringify(obj);
+}
+
+// Convert string JSON into Object
+function jsonToObj(jsonString) {
+  return JSON.parse(jsonString);
+}
+
+// Add to local storage
+function addToLocalStorage(keyName, data) {
+    localStorage.setItem(keyName, objToJson(data));
+}
+
+// Get from local storage
+function getFromLocalStorage(keyName) {
+    return jsonToObj(localStorage.getItem(keyName))
+}
+
 // Persistent store of user data and settings
-const store = {
-    userData: constants.defaultUserData,
-    settingsData: constants.defaultSettingsData,
-    extensionData: constants.defaultExtensionData
+if (getFromLocalStorage('userData') == null) {
+    addToLocalStorage('userData', constants.defaultUserData)
+}
+if (getFromLocalStorage('settingsData') == null) {
+    addToLocalStorage('settingsData', constants.defaultSettingsData)
+}
+if (getFromLocalStorage('extensionData') == null) {
+    addToLocalStorage('extensionData', constants.defaultExtensionData)
 }
 
 // Urls to block when ads are disabled
@@ -26,46 +50,51 @@ function blockAdEvent(e) {
 
 // Messages listener
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
+    console.log(msg)
+    console.log(sender)
+    console.log(response)
     if (msg.from === constants.commAgents.POPUP || msg.from === constants.commAgents.CONTENT) {
         switch (msg.subject) {
 
             case constants.commSubjects.UPDATE.USER_DATA:
-                store.userData = msg.payload
-                store.settingsData = userSettingsMapper.map(store.settingsData, store.userData)
-                response(store.settingsData)
+                addToLocalStorage('userData', msg.payload)
+                var storeToSettingsData = userSettingsMapper.map(getFromLocalStorage('settingsData'), getFromLocalStorage('userData'))
+                addToLocalStorage('settingsData', storeToSettingsData)
+                response(getFromLocalStorage('settingsData'))
                 break
 
             case constants.commSubjects.UPDATE.SETTINGS_DATA:
-                store.settingsData = msg.payload
-                if (store.settingsData.options.noise.includes(constants.noiseTypes.ADS) && !chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
+                addToLocalStorage('settingsData', msg.payload)
+                var storedSettingsData = getFromLocalStorage('settingsData')
+                if (storedSettingsData.options.noise.includes(constants.noiseTypes.ADS) && !chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
                     chrome.webRequest.onBeforeRequest.addListener(blockAdEvent, { urls: adUrls }, ["blocking"]);
-                else if (!store.settingsData.options.noise.includes(constants.noiseTypes.ADS) && chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
+                else if (!storedSettingsData.options.noise.includes(constants.noiseTypes.ADS) && chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
                     chrome.webRequest.onBeforeRequest.removeListener(blockAdEvent)
                 response('store.settingsData updated')
                 break
 
             case constants.commSubjects.UPDATE.EXTENSION_DATA:
-                store.extensionData = msg.payload
+                addToLocalStorage('extensionData', msg.payload)
                 response('store.extensionData updated')
                 break
 
             case constants.commSubjects.REQUEST.SETTINGS_DATA:
-                response(store.settingsData)
+                response(getFromLocalStorage('settingsData'))
                 break
 
             case constants.commSubjects.REQUEST.EXTENSION_DATA:
-                response(store.extensionData)
+                response(getFromLocalStorage('extensionData'))
                 break
 
             case constants.commSubjects.REQUEST.USER_DATA:
-                response(store.userData)
+                response(getFromLocalStorage('userData'))
                 break
 
             case constants.commSubjects.REQUEST.ALL_DATA:
                 response({
-                    userData: store.userData,
-                    settingsData: store.settingsData,
-                    extensionData: store.extensionData
+                    userData: getFromLocalStorage('userData'),
+                    settingsData: getFromLocalStorage('settingsData'),
+                    extensionData: getFromLocalStorage('extensionData')
                 })
                 break
 
