@@ -1,7 +1,7 @@
 /*global chrome*/
 import React, { useState, useEffect } from 'react'
 import './popup.sass'
-import { Link, createTheme, colors, ThemeProvider, TabItem, Tabs, Button, Icon, Checkbox } from 'bold-ui'
+import { Link, createTheme, colors, ThemeProvider, TabItem, Tabs, Button, Icon, Checkbox, HFlow, Switch, Tooltip } from 'bold-ui'
 import logo from './assets/boto.png'
 import OptionsItem from './components/OptionsItem.jsx'
 import UserForm from './components/UserForm'
@@ -15,6 +15,11 @@ const botoTheme = createTheme({
     },
 })
 
+// Get from local storage
+function getFromLocalStorage(keyName) {
+    return JSON.parse(localStorage.getItem(keyName))
+}
+
 function Popup() {
 
     const hideNextElement = () => {
@@ -23,6 +28,38 @@ function Popup() {
     }
     const resetHiddenElements = () => sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.RESET)
     const stopHideNextElement = () => sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.STOP_HIDE_NEXT)
+
+    const extensionZoom = (turnExtensionBiggerValue) => {
+        if(turnExtensionBiggerValue) {
+            return constants.extensionZoom.ZOOMED
+        } else {
+            return constants.extensionZoom.DEFAULT
+        }
+    }
+
+    const resetDefaultSettingsBasedOnUserProfile = () => {
+        setPopupUpdating(true)
+        updateUserDataMessage()
+        setAutoFixElementsValue(true)
+        setAcceptCookiesValue(false)
+        resetHiddenElements()
+        setPopupUpdating(false)
+    }
+
+    const disableExtension = (enabled) => {
+        setPopupUpdating(true)
+        setExtensionEnabledValue(enabled)
+        updateExtensionDataMessage()
+        if (enabled) {
+            sendMessageToAllContents(constants.commSubjects.UPDATE.SETTINGS_DATA, getFromLocalStorage('settingsData'))
+            sendMessageToAllContents(constants.commSubjects.UPDATE.EXTENSION_DATA, getFromLocalStorage('extensionData'))
+        } else {
+            sendMessageToAllContents(constants.commSubjects.UPDATE.SETTINGS_DATA, constants.disabledSettingsData)
+            sendMessageToAllContents(constants.commSubjects.UPDATE.EXTENSION_DATA, constants.disabledExtensionData)
+        }
+        setPopupUpdating(false)
+        window.close()
+    }
 
     const requestAllDataMessage = (callback) => sendMessageToBackground(constants.commSubjects.REQUEST.ALL_DATA, null, callback)
     const updateSettingsDataMessage = () => {
@@ -41,14 +78,6 @@ function Popup() {
             settingsDataToState(newSettingsData)
             sendMessageToAllContents(constants.commSubjects.UPDATE.SETTINGS_DATA, newSettingsData)
         })
-    }
-
-    const extensionZoom = (turnExtensionBiggerValue) => {
-        if(turnExtensionBiggerValue) {
-            return constants.extensionZoom.ZOOMED
-        } else {
-            return constants.extensionZoom.DEFAULT
-        }
     }
 
     const [popupInitialized, setPopupInitialized] = useState(false)
@@ -98,17 +127,19 @@ function Popup() {
             }
         })
     }
-    
+
     // Profile
     const [userData, setUserData] = useState(constants.defaultUserData)
 
     // Extension
+    const [extensionEnabledValue, setExtensionEnabledValue] = useState(false)
     const [autoFixElementsValue, setAutoFixElementsValue] = useState(true)
     const [acceptCookiesValue, setAcceptCookiesValue] = useState(true)
 
     const extensionDataToState = (extensionData) => {
         if(extensionData) {
             setPopupUpdating(true)
+            setExtensionEnabledValue(extensionData.extensionEnabled)
             setAutoFixElementsValue(extensionData.autoFixElements)
             setAcceptCookiesValue(extensionData.acceptCookies)
             setPopupUpdating(false)
@@ -116,6 +147,7 @@ function Popup() {
     }
     const stateToExtensionData = () => {
         return ({
+            extensionEnabled: extensionEnabledValue,
             autoFixElements: autoFixElementsValue,
             acceptCookies: acceptCookiesValue
         })
@@ -138,7 +170,7 @@ function Popup() {
 
     useEffect(() => {
         if(popupInitialized && !popupUpdating) updateExtensionDataMessage()
-    }, [autoFixElementsValue, acceptCookiesValue])
+    }, [extensionEnabledValue, autoFixElementsValue, acceptCookiesValue])
 
     // Validates the userData
     useEffect(() => {
@@ -160,22 +192,24 @@ function Popup() {
                         <h1 className='header_greetings'>Olá{userData.name && ','} {userData.name.split(' ')[0]}</h1>
                     </section>
 
-                    <section className='tabs'>
-                        <Tabs>
-                            <TabItem onClick={() => setActiveTab(constants.tabs.INTERFACE)} active={activeTab === constants.tabs.INTERFACE}>Interface</TabItem>
-                            <TabItem onClick={() => setActiveTab(constants.tabs.PROFILE)} active={activeTab === constants.tabs.PROFILE}>Perfil</TabItem>
-                            <TabItem onClick={() => setActiveTab(constants.tabs.EXTENSION)} active={activeTab === constants.tabs.EXTENSION}>Extras</TabItem>
-                        </Tabs>
-                    </section>
+                    { extensionEnabledValue &&
+                        <section className='tabs'>
+                            <Tabs>
+                                <TabItem onClick={() => setActiveTab(constants.tabs.INTERFACE)} active={activeTab === constants.tabs.INTERFACE}>Interface</TabItem>
+                                <TabItem onClick={() => setActiveTab(constants.tabs.PROFILE)} active={activeTab === constants.tabs.PROFILE}>Perfil</TabItem>
+                                <TabItem onClick={() => setActiveTab(constants.tabs.EXTENSION)} active={activeTab === constants.tabs.EXTENSION}>Extras</TabItem>
+                            </Tabs>
+                        </section>
+                    }
 
-                    { activeTab === constants.tabs.INTERFACE &&
+                    { activeTab === constants.tabs.INTERFACE && extensionEnabledValue &&
                         <section className='body body-interface'>
                             <OptionsItem label='Brilho' type={constants.optionsItemTypes.SLIDER}
                                 value={brightnessValue} valueSetter={setBrightnessValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
                                 minusIcon='desktopFilled' plusIcon='desktopOutline'/>
                             <OptionsItem label='Contraste' type={constants.optionsItemTypes.SLIDER}
                                 value={contrastValue} valueSetter={setContrastValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
-                                minusIcon='contrastActive' plusIcon='contrast'/>
+                                minusIcon='contrast' plusIcon='contrastActive'/>
                             <OptionsItem label='Zoom' type={constants.optionsItemTypes.SLIDER}
                                 value={zoomValue} valueSetter={setZoomValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
                                 minusIcon='zoomMinusOutline' plusIcon='zoomPlusOutline'/>
@@ -192,12 +226,12 @@ function Popup() {
                                 value={daltonismValue} valueSetter={setDaltonismValue} selectItems={Object.values(constants.daltonismTypes)} /> */}
                         </section>
                     }
-                    { activeTab === constants.tabs.PROFILE &&
+                    { activeTab === constants.tabs.PROFILE && extensionEnabledValue &&
                         <section className='body body-profile'>
                             <UserForm userData={userData} setUserData={setUserData} setFormActive={setFormActive} profileForm={true}/>
                         </section>
                     }
-                    { activeTab === constants.tabs.EXTENSION &&
+                    { activeTab === constants.tabs.EXTENSION && extensionEnabledValue &&
                         <section className='body body-extension'>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
                                 <Checkbox label='Adaptar automaticamente elementos de baixa acessibilidade'
@@ -215,11 +249,18 @@ function Popup() {
                                 <Checkbox label='Aceitar automaticamente todas as solicitações de uso de "cookies"'
                                     checked={acceptCookiesValue} onChange={e => setAcceptCookiesValue(e.target.checked)} />
                             </OptionsItem>
+                            <Button size='small' kind='primary' skin='outline' onClick={resetDefaultSettingsBasedOnUserProfile}>
+                                <Icon icon='undo'/>  Restaurar configurações</Button>
                         </section>
                     }
 
                     <section className='footer'>
-                        <span className='footer_logo'>Boto<img src={logo}/></span>
+                        <HFlow hSpacing={2} justifyContent="space-between">
+                            <span className='footer_logo'>Boto<img src={logo}/></span>
+                            <Tooltip placement="top" text="Habilitar ou desabilitar a extensão" transitionDelay={200}>
+                                <Switch checked={extensionEnabledValue} onChange={e => disableExtension(e.target.checked)} />
+                            </Tooltip>
+                        </HFlow>
                         {/* <a href='#' target='_blank' className='footer_logo'>Boto<img src={logo}/></a> */}
                         {/* <span className='footer_links'>
                             <Link title='Ajuda' href='#'>Ajuda</Link>

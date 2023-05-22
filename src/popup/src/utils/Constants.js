@@ -16,7 +16,8 @@ export const commSubjects = {
         HIDE_NEXT: 'hiddenElements.hideNext',
         RESET: 'hiddenElements.reset',
         STOP_HIDE_NEXT: 'hiddenElements.stopHideNext'
-    }
+    },
+    PAGE_RELOAD: 'page.reload'
 }
 export const commAgents = {
     POPUP: 'popup',
@@ -77,7 +78,27 @@ export const defaultSettingsData = {
     }
 }
 export const defaultExtensionData = {
+    extensionEnabled: true,
     autoFixElements: true,
+    acceptCookies: false
+}
+
+export const disabledSettingsData = {
+    userFormCompleted: true,
+    options: {
+        brightness: 0,
+        contrast: 0,
+        zoom: 0,
+        fontSize: 0,
+        noise: [],
+        daltonism: daltonismTypes.NO,
+        autoClickOnHover: false,
+        turnExtensionBigger: false
+    }
+}
+export const disabledExtensionData = {
+    extensionEnabled: false,
+    autoFixElements: false,
     acceptCookies: false
 }
 

@@ -3,24 +3,14 @@ import * as userSettingsMapper from './utils/userSettingsMapper'
 
 console.log('background: loaded')
 
-// Convert Object into string JSON
-function objToJson(obj) {
-  return JSON.stringify(obj);
-}
-
-// Convert string JSON into Object
-function jsonToObj(jsonString) {
-  return JSON.parse(jsonString);
-}
-
 // Add to local storage
 function addToLocalStorage(keyName, data) {
-    localStorage.setItem(keyName, objToJson(data));
+    localStorage.setItem(keyName, JSON.stringify(data));
 }
 
 // Get from local storage
 function getFromLocalStorage(keyName) {
-    return jsonToObj(localStorage.getItem(keyName))
+    return JSON.parse(localStorage.getItem(keyName))
 }
 
 // Persistent store of user data and settings
@@ -32,6 +22,12 @@ if (getFromLocalStorage('settingsData') == null) {
 }
 if (getFromLocalStorage('extensionData') == null) {
     addToLocalStorage('extensionData', constants.defaultExtensionData)
+}
+
+// Extension disabled data
+const extensionDisabledData = {
+    settingsData: constants.disabledSettingsData,
+    extensionData: constants.disabledExtensionData
 }
 
 // Urls to block when ads are disabled
@@ -64,26 +60,40 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
                 break
 
             case constants.commSubjects.UPDATE.SETTINGS_DATA:
-                addToLocalStorage('settingsData', msg.payload)
-                var storedSettingsData = getFromLocalStorage('settingsData')
-                if (storedSettingsData.options.noise.includes(constants.noiseTypes.ADS) && !chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
+                if (getFromLocalStorage('extensionData').extensionEnabled) {
+                    addToLocalStorage('settingsData', msg.payload)
+                }
+                if (msg.payload.options.noise.includes(constants.noiseTypes.ADS) && !chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
                     chrome.webRequest.onBeforeRequest.addListener(blockAdEvent, { urls: adUrls }, ["blocking"]);
-                else if (!storedSettingsData.options.noise.includes(constants.noiseTypes.ADS) && chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
+                else if (!msg.payload.options.noise.includes(constants.noiseTypes.ADS) && chrome.webRequest.onBeforeRequest.hasListener(blockAdEvent))
                     chrome.webRequest.onBeforeRequest.removeListener(blockAdEvent)
-                response('store.settingsData updated')
+                response('settingsData updated')
                 break
 
             case constants.commSubjects.UPDATE.EXTENSION_DATA:
-                addToLocalStorage('extensionData', msg.payload)
-                response('store.extensionData updated')
+                if (getFromLocalStorage('extensionData').extensionEnabled) {
+                    addToLocalStorage('extensionData', msg.payload)
+                } else if (msg.payload.extensionEnabled) {
+                    var extensionDataFromStorage = getFromLocalStorage('extensionData')
+                    extensionDataFromStorage.extensionEnabled = true
+                    addToLocalStorage('extensionData', extensionDataFromStorage)
+                }
                 break
 
             case constants.commSubjects.REQUEST.SETTINGS_DATA:
-                response(getFromLocalStorage('settingsData'))
+                if (getFromLocalStorage('extensionData').extensionEnabled) {
+                    response(getFromLocalStorage('settingsData'))
+                } else {
+                    response(extensionDisabledData.settingsData)
+                }
                 break
 
             case constants.commSubjects.REQUEST.EXTENSION_DATA:
-                response(getFromLocalStorage('extensionData'))
+                if (getFromLocalStorage('extensionData').extensionEnabled) {
+                    response(getFromLocalStorage('extensionData'))
+                } else {
+                    response(extensionDisabledData.extensionData)
+                }
                 break
 
             case constants.commSubjects.REQUEST.USER_DATA:
@@ -91,11 +101,19 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
                 break
 
             case constants.commSubjects.REQUEST.ALL_DATA:
-                response({
-                    userData: getFromLocalStorage('userData'),
-                    settingsData: getFromLocalStorage('settingsData'),
-                    extensionData: getFromLocalStorage('extensionData')
-                })
+                if (getFromLocalStorage('extensionData').extensionEnabled) {
+                    response({
+                        userData: getFromLocalStorage('userData'),
+                        settingsData: getFromLocalStorage('settingsData'),
+                        extensionData: getFromLocalStorage('extensionData')
+                    })
+                } else {
+                    response({
+                        userData: getFromLocalStorage('userData'),
+                        settingsData: extensionDisabledData.settingsData,
+                        extensionData: extensionDisabledData.extensionData
+                    })
+                }
                 break
 
             default:

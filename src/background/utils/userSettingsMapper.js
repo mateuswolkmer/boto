@@ -4,6 +4,9 @@ import * as constants from '../../shared/constants'
 export function map(settingsData, userData) {
     let newSettingsData = Object.assign({}, settingsData)
 
+    // brightness
+    newSettingsData.options.brightness = 0
+
     // Contrast
     if (userData.cognitiveDeficiency === constants.cognitiveDeficiencyTypes.SEVERE)
         newSettingsData.options.contrast = -10 // -20
