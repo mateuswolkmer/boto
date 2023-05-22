@@ -102,7 +102,7 @@ const UserForm = ({
                             { currentStep == 3 &&
                                 <>
                                     <Select
-                                        label='Você possui dificuldade de mover as mãos ou movimentar os dedos?'
+                                        label='Você possui dificuldade para movimentar as mãos ou os dedos?'
                                         items={Object.values(constants.motorDeficiencyTypes)}
                                         value={userData.motorDeficiency}
                                         onChange={handleChange('motorDeficiency')}
@@ -111,7 +111,7 @@ const UserForm = ({
                                         clearable={false}
                                         name='motorDeficiency'
                                         autoFocus />
-                                    <span class='user-form_field-tip'>Caso possua qualquer dificuldade, mesmo que seja temporária, irei te ajudar realizando cliques automáticamente após 3s com o cursor parado em cima do elemento desejado</span>
+                                    <span class='user-form_field-tip'>Se possui dificuldade, mesmo temporária, irei te ajudar realizando cliques automaticamente após 3s com o cursor parado em cima do elemento desejado</span>
                                 </>
                             }
                             { currentStep == 4 &&
