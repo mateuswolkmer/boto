@@ -17,7 +17,7 @@ export const zoomRule = (zoom) => (
 )
 
 export const contrastBrightnessRule = (contrast, brightness) => (
-    `body { 
+    `html {
         filter: contrast(${contrast}) brightness(${brightness}) !important;
     }`
 )
