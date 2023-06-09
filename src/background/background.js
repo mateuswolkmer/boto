@@ -13,17 +13,6 @@ function getFromLocalStorage(keyName) {
     return JSON.parse(localStorage.getItem(keyName))
 }
 
-// Persistent store of user data and settings
-if (getFromLocalStorage('userData') == null) {
-    addToLocalStorage('userData', constants.defaultUserData)
-}
-if (getFromLocalStorage('settingsData') == null) {
-    addToLocalStorage('settingsData', constants.defaultSettingsData)
-}
-if (getFromLocalStorage('extensionData') == null) {
-    addToLocalStorage('extensionData', constants.defaultExtensionData)
-}
-
 // Extension disabled data
 const extensionDisabledData = {
     settingsData: constants.disabledSettingsData,
@@ -77,6 +66,14 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
                     var extensionDataFromStorage = getFromLocalStorage('extensionData')
                     extensionDataFromStorage.extensionEnabled = true
                     addToLocalStorage('extensionData', extensionDataFromStorage)
+                    chrome.browserAction.setIcon({
+                        path: '/assets/boto_32.png'
+                    })
+                }
+                if (!msg.payload.extensionEnabled) {
+                    chrome.browserAction.setIcon({
+                        path: '/assets/boto_off.png'
+                    })
                 }
                 break
 
