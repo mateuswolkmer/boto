@@ -37,12 +37,12 @@ const UserForm = ({
     }
 
     return (
-        !profileForm &&
+        ( !profileForm &&
             <main className='user-form'>
                 <Button kind='primary' skin='ghost' size='small' onClick={() => setFormActive(false)} style={{ position: 'absolute', top: '4px', right: '4px' }}>
                     <Icon icon='timesDefault'/>
                 </Button>
-                { currentStep === -1 && 
+                { currentStep === -1 &&
                     <>
                         <div className='user-form_welcome'>
                             <h2 className='user-form_welcome-title'>Bem-vindo</h2>
@@ -57,7 +57,7 @@ const UserForm = ({
                 { currentStep >= 0 &&
                     <>
                         <div className='user-form_field'>
-                            { currentStep == 0 &&
+                            { currentStep === 0 &&
                                 <>
                                     <TextField
                                         name='name'
@@ -70,7 +70,7 @@ const UserForm = ({
                                     <span class='user-form_field-tip'>O seu nome servirá para eu possa saudá-lo</span>
                                 </>
                             }
-                            { currentStep == 1 &&
+                            { currentStep === 1 &&
                                 <>
                                     <TextField
                                         name='age'
@@ -82,9 +82,9 @@ const UserForm = ({
                                         onKeyPress={handleKeyPress}
                                         autoFocus />
                                     <span class='user-form_field-tip'>A sua idade irá influenciar em quanto irei aumentar os elementos da tela e diminuir a quantidade de informação</span>
-                                </>        
+                                </>
                             }
-                            { currentStep == 2 &&
+                            { currentStep === 2 &&
                                 <>
                                     <Select
                                         label='Você possui algum problema para enxergar de perto?'
@@ -94,12 +94,11 @@ const UserForm = ({
                                         onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='sightDeficiency'
-                                        autoFocus />
+                                        name='sightDeficiency' />
                                     <span class='user-form_field-tip'>Caso possua alguma deficiência de visão, irei te ajudar ampliando todos os textos e demais elementos</span>
                                 </>
                             }
-                            { currentStep == 3 &&
+                            { currentStep === 3 &&
                                 <>
                                     <Select
                                         label='Você possui dificuldade para movimentar as mãos ou os dedos?'
@@ -109,12 +108,11 @@ const UserForm = ({
                                         onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='motorDeficiency'
-                                        autoFocus />
-                                    <span class='user-form_field-tip'>Se possui dificuldade, mesmo temporária, irei te ajudar realizando cliques automaticamente após 3s com o cursor parado em cima do elemento desejado</span>
+                                        name='motorDeficiency' />
+                                    <span class='user-form_field-tip'>Se possui dificuldade, mesmo temporária, irei te ajudar realizando cliques automaticamente após 3s com o mouse parado em cima do elemento desejado</span>
                                 </>
                             }
-                            { currentStep == 4 &&
+                            { currentStep === 4 &&
                                 <>
                                     <Select
                                         label='Você possui alguma deficiência cognitiva?'
@@ -124,12 +122,11 @@ const UserForm = ({
                                         onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='cognitiveDeficiency'
-                                        autoFocus />
+                                        name='cognitiveDeficiency' />
                                     <span class='user-form_field-tip'>Sei como é difícil navegar em sites cheios de informações com essas condições e irei te ajudar reduzindo-as, além de ampliar o que realmente importa</span>
                                 </>
                             }
-                            {/* { currentStep == 5 &&
+                            {/* { currentStep === 5 &&
                                 <>
                                     <Select
                                         label='Você possui algum tipo de daltonismo?'
@@ -139,12 +136,11 @@ const UserForm = ({
                                         onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='daltonism'
-                                        autoFocus />
+                                        name='daltonism' />
                                     <span class='user-form_field-tip'>Irei aplicar um filtro de cores especial para você caso possua algum tipo de daltonismo</span>
                                 </>
                             } */}
-                            { currentStep == 5 &&
+                            { currentStep === 5 &&
                                 <>
                                     <Select
                                         label='Qual sua mão predominante?'
@@ -154,8 +150,7 @@ const UserForm = ({
                                         onKeyPress={handleKeyPress}
                                         itemToString={item => item}
                                         clearable={false}
-                                        name='handedness'
-                                        autoFocus />
+                                        name='handedness' />
                                     <span class='user-form_field-tip'>Alguns elementos da tela poderão ser adaptados para o lado da sua mão predominante</span>
                                 </>
                             }
@@ -170,16 +165,16 @@ const UserForm = ({
                         <div className='user-form_footer'>
                             <Button size='small' onClick={decreaseStep} disabled={currentStep === 0}><Icon icon='angleLeft'/>Voltar</Button>
                             <span>{currentStep + 1} / {steps}</span>
-                            { currentStep < steps-1 &&
+                            { (currentStep < steps-1 &&
                                 <Button kind='primary' skin='outline' size='small' onClick={increaseStep}>Avançar<Icon icon='angleRight'/></Button>
-                                ||
+                                ) ||
                                 <Button kind='primary' size='small' onClick={() => setFormActive(false)}>Finalizar<Icon icon='checkDefault'/></Button>
                             }
                         </div>
-                    </> 
+                    </>
                 }
             </main>
-            ||            
+            ) ||
             <main className='user-form user-form-profile'>
                 <TextField
                     label='Nome'
@@ -219,7 +214,7 @@ const UserForm = ({
                     onChange={handleChange('cognitiveDeficiency')}
                     itemToString={item => item}
                     clearable={false}
-                    name='cognitiveDeficiency' /> 
+                    name='cognitiveDeficiency' />
                 {/* <Select
                     label='Daltonismo (em desenvolvimento)'
                     items={Object.values(constants.daltonismTypes)}

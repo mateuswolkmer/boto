@@ -1,7 +1,7 @@
 /*global chrome*/
 import React, { useState, useEffect } from 'react'
 import './popup.sass'
-import { Link, createTheme, colors, ThemeProvider, TabItem, Tabs, Button, Icon, Checkbox, HFlow, Switch, Tooltip } from 'bold-ui'
+import { createTheme, colors, ThemeProvider, TabItem, Tabs, Button, Icon, Checkbox, HFlow, Switch, Tooltip } from 'bold-ui'
 import logo from './assets/boto.png'
 import OptionsItem from './components/OptionsItem.jsx'
 import UserForm from './components/UserForm'
@@ -15,12 +15,23 @@ const botoTheme = createTheme({
     },
 })
 
+// Add to local storage
+function addToLocalStorage(keyName, data) {
+    localStorage.setItem(keyName, JSON.stringify(data));
+}
+
 // Get from local storage
 function getFromLocalStorage(keyName) {
     return JSON.parse(localStorage.getItem(keyName))
 }
 
 function Popup() {
+    // Persistent store of user data and settings
+    if (getFromLocalStorage('userData') == null) {
+        addToLocalStorage('userData', constants.defaultUserData)
+        addToLocalStorage('settingsData', constants.defaultSettingsData)
+        addToLocalStorage('extensionData', constants.defaultExtensionData)
+    }
 
     const hideNextElement = () => {
         sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.HIDE_NEXT)
@@ -56,6 +67,7 @@ function Popup() {
         } else {
             sendMessageToAllContents(constants.commSubjects.UPDATE.SETTINGS_DATA, constants.disabledSettingsData)
             sendMessageToAllContents(constants.commSubjects.UPDATE.EXTENSION_DATA, constants.disabledExtensionData)
+            resetHiddenElements()
         }
         setPopupUpdating(false)
         window.close()
@@ -195,9 +207,15 @@ function Popup() {
                     { extensionEnabledValue &&
                         <section className='tabs'>
                             <Tabs>
-                                <TabItem onClick={() => setActiveTab(constants.tabs.INTERFACE)} active={activeTab === constants.tabs.INTERFACE}>Interface</TabItem>
-                                <TabItem onClick={() => setActiveTab(constants.tabs.PROFILE)} active={activeTab === constants.tabs.PROFILE}>Perfil</TabItem>
-                                <TabItem onClick={() => setActiveTab(constants.tabs.EXTENSION)} active={activeTab === constants.tabs.EXTENSION}>Extras</TabItem>
+                                <Tooltip placement='top' text='Acessar aba interface'>
+                                    <TabItem onClick={() => setActiveTab(constants.tabs.INTERFACE)} active={activeTab === constants.tabs.INTERFACE}>Interface</TabItem>
+                                </Tooltip>
+                                <Tooltip placement='top' text='Acessar aba perfil'>
+                                    <TabItem onClick={() => setActiveTab(constants.tabs.PROFILE)} active={activeTab === constants.tabs.PROFILE}>Perfil</TabItem>
+                                </Tooltip>
+                                <Tooltip placement='top' text='Acessar aba extras'>
+                                    <TabItem onClick={() => setActiveTab(constants.tabs.EXTENSION)} active={activeTab === constants.tabs.EXTENSION}>Extras</TabItem>
+                                </Tooltip>
                             </Tabs>
                         </section>
                     }
@@ -206,24 +224,38 @@ function Popup() {
                         <section className='body body-interface'>
                             <OptionsItem label='Brilho' type={constants.optionsItemTypes.SLIDER}
                                 value={brightnessValue} valueSetter={setBrightnessValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
-                                minusIcon='desktopFilled' plusIcon='desktopOutline'/>
+                                minusIcon='desktopFilled' plusIcon='desktopOutline'
+                                tooltip='Altere o brilho da página arrastando a barra'
+                                tooltipMinus='Diminuir brilho' tooltipPlus='Aumentar brilho'/>
                             <OptionsItem label='Contraste' type={constants.optionsItemTypes.SLIDER}
                                 value={contrastValue} valueSetter={setContrastValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
-                                minusIcon='contrast' plusIcon='contrastActive'/>
+                                minusIcon='contrast' plusIcon='contrastActive'
+                                tooltip='Altere o contraste da página arrastando a barra'
+                                tooltipMinus='Diminuir contraste' tooltipPlus='Aumentar contraste'/>
                             <OptionsItem label='Zoom' type={constants.optionsItemTypes.SLIDER}
                                 value={zoomValue} valueSetter={setZoomValue} sliderStep={5} displayValueConversor={(value) => (value - 50) * 2}
-                                minusIcon='zoomMinusOutline' plusIcon='zoomPlusOutline'/>
+                                minusIcon='zoomMinusOutline' plusIcon='zoomPlusOutline'
+                                tooltip='Altere o tamanho dos elementos da página arrastando a barra para a direita ou para a esquerda'
+                                tooltipMinus='Diminuir tamanho dos elementos' tooltipPlus='Aumentar tamanho dos elementos'/>
                             <OptionsItem label='Espaçamento' type={constants.optionsItemTypes.SLIDER}
                                 value={fontSizeValue} valueSetter={setFontSizeValue} sliderStep={5} displayValueConversor={(value) => value}
-                                minusIcon='minimize' plusIcon='expand'/>
+                                minusIcon='minimize' plusIcon='expand'
+                                tooltip='Altere o espaçamento de textos da página arrastando a barra'
+                                tooltipMinus='Diminuir espaçamento de textos' tooltipPlus='Aumentar espaçamento de textos'/>
                             <OptionsItem label='Esconder elementos' type={constants.optionsItemTypes.MULTISELECT}
-                                value={noiseValue} valueSetter={setNoiseValue} selectItems={Object.values(constants.noiseTypes)} />
+                                value={noiseValue} valueSetter={setNoiseValue} selectItems={Object.values(constants.noiseTypes)}
+                                tooltip='Clique neste espaço se quiser esconder imagens e/ou propagandas da página'/>
                             <OptionsItem label='Esconder elemento específico' type={constants.optionsItemTypes.CUSTOM}>
-                                <Button size='small' onClick={hideNextElement}><Icon icon='penTool'/> Iniciar seleção</Button>
-                                <Button size='small' kind='primary' skin='outline' onClick={resetHiddenElements}>Restaurar seleção</Button>
+                                <Tooltip placement='top' text='Ao clicar neste botão, a extensão será minimizada e você podera esconder um elemento da página clicando em cima dele'>
+                                    <Button size='small' onClick={hideNextElement}><Icon icon='penTool'/> Iniciar seleção</Button>
+                                </Tooltip>
+                                <Tooltip placement='top' text='Exibir novamente os elementos específicos escondidos'>
+                                    <Button size='small' kind='primary' skin='outline' onClick={resetHiddenElements}>Restaurar seleção</Button>
+                                </Tooltip>
                             </OptionsItem>
                             {/* <OptionsItem label='Daltonismo' type={constants.optionsItemTypes.SELECT}
-                                value={daltonismValue} valueSetter={setDaltonismValue} selectItems={Object.values(constants.daltonismTypes)} /> */}
+                                value={daltonismValue} valueSetter={setDaltonismValue} selectItems={Object.values(constants.daltonismTypes)}
+                                tooltip='Preencher'/> */}
                         </section>
                     }
                     { activeTab === constants.tabs.PROFILE && extensionEnabledValue &&
@@ -233,33 +265,39 @@ function Popup() {
                     }
                     { activeTab === constants.tabs.EXTENSION && extensionEnabledValue &&
                         <section className='body body-extension'>
-                            <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
+                            <OptionsItem type={constants.optionsItemTypes.CUSTOM2}
+                                tooltip='Esta opção ajusta automaticamente elementos que possuem um baixo nível de contraste, facilitando a visualização'>
                                 <Checkbox label='Adaptar automaticamente elementos de baixa acessibilidade'
                                     checked={autoFixElementsValue} onChange={e => setAutoFixElementsValue(e.target.checked)} />
                             </OptionsItem>
-                            <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
-                                <Checkbox label='Realizar clique automático após 3s com o cursor parado'
+                            <OptionsItem type={constants.optionsItemTypes.CUSTOM2}
+                                tooltip='Com esta funcionalidade ativada, basta mover o mouse para o elemento que deseja acessar e após 3 segundos o Boto irá clicar automaticamente para você'>
+                                <Checkbox label='Realizar clique automático após 3s com o mouse parado'
                                     checked={autoClickOnHoverValue} onChange={e => setAutoClickOnHoverValue(e.target.checked)} />
                             </OptionsItem>
-                            <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
+                            <OptionsItem type={constants.optionsItemTypes.CUSTOM2}
+                                tooltip='Caso deseje aumentar o tamanho dos elementos do boto, basta marcar esta opção'>
                                 <Checkbox label='Aumentar o tamanho da extensão para melhor visualização'
                                     checked={turnExtensionBiggerValue} onChange={e => setTurnExtensionBiggerValue(e.target.checked)} />
                             </OptionsItem>
-                            <OptionsItem type={constants.optionsItemTypes.CUSTOM}>
+                            <OptionsItem type={constants.optionsItemTypes.CUSTOM2}
+                                tooltip='Sabe aquelas solicitações que aparecem pedindo sua permissão para uso de "cookies"? Basta ativar esta opção para aceitar automaticamente'>
                                 <Checkbox label='Aceitar automaticamente todas as solicitações de uso de "cookies"'
                                     checked={acceptCookiesValue} onChange={e => setAcceptCookiesValue(e.target.checked)} />
                             </OptionsItem>
-                            <Button size='small' kind='primary' skin='outline' onClick={resetDefaultSettingsBasedOnUserProfile}>
-                                <Icon icon='undo'/>  Restaurar configurações</Button>
+                            <Tooltip placement='top' text='Restaura as configurações do perfil'>
+                                <Button size='small' kind='primary' skin='outline' onClick={resetDefaultSettingsBasedOnUserProfile}>
+                                    <Icon icon='undo'/>  Restaurar configurações</Button>
+                            </Tooltip>
                         </section>
                     }
 
                     <section className='footer'>
-                        <HFlow hSpacing={2} justifyContent="space-between">
-                            <span className='footer_logo'>Boto<img src={logo}/></span>
-                            <Tooltip placement="top" text="Habilitar ou desabilitar a extensão" transitionDelay={200}>
-                                <Switch checked={extensionEnabledValue} onChange={e => disableExtension(e.target.checked)} />
+                        <HFlow justifyContent='space-between'>
+                            <Tooltip placement='top' text={extensionEnabledValue ? 'Desabilitar a extensão' : 'Habilitar a extensão'}>
+                                <Switch label={extensionEnabledValue ? 'Ligado' : 'Desligado'} checked={extensionEnabledValue} onChange={e => disableExtension(e.target.checked)} />
                             </Tooltip>
+                            <span className='footer_logo'>Boto<img alt='Boto' src={logo}/></span>
                         </HFlow>
                         {/* <a href='#' target='_blank' className='footer_logo'>Boto<img src={logo}/></a> */}
                         {/* <span className='footer_links'>
