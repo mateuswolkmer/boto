@@ -5,13 +5,13 @@ export const removeElementCursorRule = () => (
 )
 
 export const fontSizeRule = (fontSize, letterSpacing, lineHeight) => ( // font-size: ${fontSize}% !important; line-height: ${lineHeight}rem !important;
-    `body { 
+    `* {
         letter-spacing: ${letterSpacing}rem !important;        
     }`
 )
 
 export const zoomRule = (zoom) => (
-    `body { 
+    `body {
         zoom: ${zoom}% !important;
     }`
 )

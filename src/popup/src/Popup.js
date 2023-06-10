@@ -1,7 +1,7 @@
 /*global chrome*/
 import React, { useState, useEffect } from 'react'
 import './popup.sass'
-import { createTheme, colors, ThemeProvider, TabItem, Tabs, Button, Icon, Checkbox, HFlow, Switch, Tooltip } from 'bold-ui'
+import { Link, createTheme, colors, ThemeProvider, TabItem, Tabs, Button, Icon, Checkbox, HFlow, Switch, Tooltip } from 'bold-ui'
 import logo from './assets/boto.png'
 import OptionsItem from './components/OptionsItem.jsx'
 import UserForm from './components/UserForm'
@@ -281,7 +281,7 @@ function Popup() {
                                     checked={turnExtensionBiggerValue} onChange={e => setTurnExtensionBiggerValue(e.target.checked)} />
                             </OptionsItem>
                             <OptionsItem type={constants.optionsItemTypes.CUSTOM2}
-                                tooltip='Sabe aquelas solicitações que aparecem pedindo sua permissão para uso de "cookies"? Basta ativar esta opção para aceitar automaticamente'>
+                                tooltip='Sabe aquelas solicitações que aparecem pedindo sua permissão para uso de "cookies"? Basta ativar esta opção para aceitá-las automaticamente'>
                                 <Checkbox label='Aceitar automaticamente todas as solicitações de uso de "cookies"'
                                     checked={acceptCookiesValue} onChange={e => setAcceptCookiesValue(e.target.checked)} />
                             </OptionsItem>
@@ -294,7 +294,7 @@ function Popup() {
 
                     <section className='footer'>
                         <HFlow justifyContent='space-between'>
-                            <Tooltip placement='top' text={extensionEnabledValue ? 'Desabilitar a extensão' : 'Habilitar a extensão'}>
+                            <Tooltip placement='top' text={extensionEnabledValue ? 'Desligar a extensão' : 'Ligar a extensão'}>
                                 <Switch label={extensionEnabledValue ? 'Ligado' : 'Desligado'} checked={extensionEnabledValue} onChange={e => disableExtension(e.target.checked)} />
                             </Tooltip>
                             <span className='footer_logo'>Boto<img alt='Boto' src={logo}/></span>
