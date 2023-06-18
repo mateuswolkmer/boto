@@ -67,7 +67,7 @@ const UserForm = ({
                                         onChange={handleChange('name')}
                                         onKeyPress={handleKeyPress}
                                         autoFocus />
-                                    <span class='user-form_field-tip'>O seu nome servirá para eu possa saudá-lo</span>
+                                    <span class='user-form_field-tip'>O seu nome servirá para que eu possa saudá-lo</span>
                                 </>
                             }
                             { currentStep === 1 &&

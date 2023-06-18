@@ -16,8 +16,7 @@ export const commSubjects = {
         HIDE_NEXT: 'hiddenElements.hideNext',
         RESET: 'hiddenElements.reset',
         STOP_HIDE_NEXT: 'hiddenElements.stopHideNext'
-    },
-    PAGE_RELOAD: 'page.reload'
+    }
 }
 export const commAgents = {
     POPUP: 'popup',
@@ -113,7 +112,8 @@ export const optionsItemTypes = {
     SLIDER: 'slider',
     SELECT: 'select',
     MULTISELECT: 'multiselect',
-    CUSTOM: 'custom'
+    CUSTOM: 'custom',
+    CUSTOM2: 'custom2'
 }
 
 export const extensionZoom = {

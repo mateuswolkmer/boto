@@ -15,8 +15,7 @@ export const commSubjects = {
         HIDE_NEXT: 'hiddenElements.hideNext',
         RESET: 'hiddenElements.reset',
         STOP_HIDE_NEXT: 'hiddenElements.stopHideNext'
-    },
-    PAGE_RELOAD: 'page.reload'
+    }
 }
 export const commAgents = {
     POPUP: 'popup',

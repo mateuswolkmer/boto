@@ -159,10 +159,6 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
                 document.removeEventListener('click', hideNextClickedElementEvent)
                 break
 
-            case constants.commSubjects.PAGE_RELOAD:
-                location.reload()
-                break
-
             default:
                 response('unknown message subject')
         }
