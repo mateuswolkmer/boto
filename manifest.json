@@ -30,7 +30,7 @@
     },
     "browser_action": {
         "default_title": "Boto",
-        "default_icon": "assets/boto_16.png",
+        "default_icon": "assets/boto_32.png",
         "default_popup": "popup/index.html"
     },
     "permissions": [

@@ -13,7 +13,8 @@ export const commSubjects = {
     },
     HIDDEN_ELEMENTS: {
         HIDE_NEXT: 'hiddenElements.hideNext',
-        RESET: 'hiddenElements.reset'
+        RESET: 'hiddenElements.reset',
+        STOP_HIDE_NEXT: 'hiddenElements.stopHideNext'
     }
 }
 export const commAgents = {
@@ -41,6 +42,11 @@ export const sightDeficiencyTypes = {
     MINOR: 'Um pouco',
     MAJOR: 'Bastante'
 }
+export const motorDeficiencyTypes = {
+    NO: 'Não',
+    MILD: 'Leve',
+    SEVERE: 'Severa'
+}
 export const cognitiveDeficiencyTypes = {
     NO: 'Não',
     MILD: 'Leve',
@@ -51,6 +57,7 @@ export const defaultUserData = {
     name: '',
     age: '',
     sightDeficiency: sightDeficiencyTypes.NO,
+    motorDeficiency: motorDeficiencyTypes.NO,
     cognitiveDeficiency: cognitiveDeficiencyTypes.NO,
     daltonism: daltonismTypes.NO,
     handedness: handednessTypes.RIGHT
@@ -63,10 +70,32 @@ export const defaultSettingsData = {
         zoom: 0,
         fontSize: 0,
         noise: [],
-        daltonism: daltonismTypes.NO
+        daltonism: daltonismTypes.NO,
+        autoClickOnHover: false,
+        turnExtensionBigger: false
     }
 }
 export const defaultExtensionData = {
+    extensionEnabled: true,
     autoFixElements: true,
+    acceptCookies: false
+}
+
+export const disabledSettingsData = {
+    userFormCompleted: true,
+    options: {
+        brightness: 0,
+        contrast: 0,
+        zoom: 0,
+        fontSize: 0,
+        noise: [],
+        daltonism: daltonismTypes.NO,
+        autoClickOnHover: false,
+        turnExtensionBigger: false
+    }
+}
+export const disabledExtensionData = {
+    extensionEnabled: false,
+    autoFixElements: false,
     acceptCookies: false
 }

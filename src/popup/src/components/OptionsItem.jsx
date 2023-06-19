@@ -1,5 +1,5 @@
 import React,  { useState, useEffect } from 'react'
-import { Button, Icon, Select } from 'bold-ui'
+import { Button, Icon, Select, Tooltip } from 'bold-ui'
 import { optionsItemTypes } from '../utils/Constants'
 
 const OptionsItem = ({
@@ -12,7 +12,10 @@ const OptionsItem = ({
     selectItems,
     minusIcon,
     plusIcon,
-    children
+    children,
+    tooltip,
+    tooltipMinus,
+    tooltipPlus
 }) => {
     
     const decreaseItemValue = () => valueSetter((value - sliderStep) > 0 ? (value - sliderStep) : 0)
@@ -35,30 +38,48 @@ const OptionsItem = ({
                 { type === optionsItemTypes.SLIDER &&
                     <>
                         <div className='options_item_value-slider'>
-                            <Button size='small' onClick={e => decreaseItemValue()}><Icon icon={minusIcon || 'minus'}/></Button> 
-                            <input type='range' value={parseFloat(value)} onChange={e => valueSetter(parseFloat(e.currentTarget.value))} />
-                            <Button size='small' onClick={e => increaseItemValue()}><Icon icon={plusIcon || 'plus'}/></Button>
+                            <Tooltip placement="top" text={tooltipMinus}>
+                                <Button size='small' onClick={e => decreaseItemValue()}><Icon icon={minusIcon || 'minus'}/></Button>
+                            </Tooltip>
+                            <Tooltip placement="top" text={tooltip}>
+                                <input type='range' value={parseFloat(value)} onChange={e => valueSetter(parseFloat(e.currentTarget.value))} />
+                            </Tooltip>
+                            <Tooltip placement="top" text={tooltipPlus}>
+                                <Button size='small' onClick={e => increaseItemValue()}><Icon icon={plusIcon || 'plus'}/></Button>
+                            </Tooltip>
                         </div>
                         <span className='options_item_value-description'>{displayValue}</span>
                     </>
                 }
 
                 { type === optionsItemTypes.SELECT &&
-                    <Select items={selectItems} name={label} value={value} clearable={false}
-                        onChange={item => valueSetter(item)} 
-                        itemToString={item => item} />
+                    <Tooltip placement="top" text={tooltip}>
+                        <Select items={selectItems} name={label} value={value} clearable={false}
+                            onChange={item => valueSetter(item)}
+                            itemToString={item => item} />
+                    </Tooltip>
                 }
 
                 { type === optionsItemTypes.MULTISELECT &&
-                    <Select items={selectItems} name={label} value={value} multiple
-                        onChange={items => valueSetter(items)} 
-                        itemToString={item => item} />
+                    <Tooltip placement="top" text={tooltip}>
+                        <Select items={selectItems} name={label} value={value} multiple
+                            onChange={items => valueSetter(items)}
+                            itemToString={item => item} />
+                    </Tooltip>
                 }
 
                 { type === optionsItemTypes.CUSTOM &&
                     <div className='options_item_value-custom'>
                         {children}
                     </div>
+                }
+
+                { type === optionsItemTypes.CUSTOM2 &&
+                    <Tooltip placement='top' text={tooltip}>
+                        <div className='options_item_value-custom'>
+                            {children}
+                        </div>
+                    </Tooltip>
                 }
             </div>
         </div>

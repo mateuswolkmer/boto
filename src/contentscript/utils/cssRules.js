@@ -5,19 +5,19 @@ export const removeElementCursorRule = () => (
 )
 
 export const fontSizeRule = (fontSize, letterSpacing, lineHeight) => ( // font-size: ${fontSize}% !important; line-height: ${lineHeight}rem !important;
-    `body { 
+    `* {
         letter-spacing: ${letterSpacing}rem !important;        
     }`
 )
 
 export const zoomRule = (zoom) => (
-    `body { 
+    `body {
         zoom: ${zoom}% !important;
     }`
 )
 
 export const contrastBrightnessRule = (contrast, brightness) => (
-    `body { 
+    `html {
         filter: contrast(${contrast}) brightness(${brightness}) !important;
     }`
 )

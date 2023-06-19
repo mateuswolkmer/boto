@@ -47,7 +47,7 @@ main
     .body
         width: 100%
         flex-grow: 1
-        height: 451px
+        height: 400px
         display: flex
         flex-direction: column
         &-interface, &-extension
@@ -108,18 +108,21 @@ main
                         display: flex
                         justify-content: space-between
                         align-items: center
+        &-extension
+            button
+                margin-bottom: 15px
+                margin-top: auto
 
     .footer
         width: 100%
-        display: flex
-        justify-self: flex-end
-        justify-content: space-evenly
-        align-items: center
-        margin-top: 16px
+        margin-top: 12px
+        label
+            span
+                font-weight: 700
         &_logo
             font-family: $font_display
             color: $color_primary
-            font-size: 1rem
+            font-size: 1.3rem
             text-decoration: none
             position: relative
             img
@@ -153,6 +156,7 @@ main
             justify-content: center
             button
                 margin: 0 6px
+                width: inherit
     &_field
         height: 180px
         margin: 22px 0

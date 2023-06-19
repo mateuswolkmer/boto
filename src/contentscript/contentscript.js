@@ -39,6 +39,15 @@ var fontSizeRuleNode = {}
 var zoomRuleNode = {}
 var contrastBrightnessRuleNode = {}
 
+// Event to automatically click on the element after 3s of hover
+var timeoutForMouseStop = 0
+function autoClickOnHoverEvent(e) {
+    clearTimeout(timeoutForMouseStop)
+    timeoutForMouseStop = setTimeout(() => {
+        document.elementFromPoint(e.clientX,e.clientY).dispatchEvent(new MouseEvent("click",{bubbles: true, cancellable: true}))
+    }, 3000)
+}
+
 // Event to hide the next clicked element
 function hideNextClickedElementEvent(e) {
     e.stopImmediatePropagation()
@@ -83,6 +92,7 @@ function settingsDataUpdate(newSettingsData) {
             let newZoom = newSettingsData.options.zoom * 2 + 100 || 1
             zoomRuleNode = addStyleRule(botoStylesheet, zoomRule(newZoom), zoomRuleNode)
         }
+        window.dispatchEvent(new Event('resize'));
     }
 
     if (newSettingsData.options.noise.includes(constants.noiseTypes.IMAGES) && !prevSettingsData.options.noise.includes(constants.noiseTypes.IMAGES)) {
@@ -92,6 +102,14 @@ function settingsDataUpdate(newSettingsData) {
         showAllElements(hiddenImageElements)
         hideImagesObserver.disconnect();
         hiddenImageElements = []
+    }
+
+    if (newSettingsData.options.autoClickOnHover && !prevSettingsData.options.autoClickOnHover) {
+        document.addEventListener('mousemove', autoClickOnHoverEvent)
+        document.addEventListener('wheel', autoClickOnHoverEvent)
+    } else if (!newSettingsData.options.autoClickOnHover && prevSettingsData.options.autoClickOnHover) {
+        document.removeEventListener('mousemove', autoClickOnHoverEvent)
+        document.removeEventListener('wheel', autoClickOnHoverEvent)
     }
 
     prevSettingsData = newSettingsData
@@ -134,6 +152,11 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
             case constants.commSubjects.HIDDEN_ELEMENTS.RESET:
                 showAllElements(hiddenElements)
                 hiddenElements = []
+                break
+
+            case constants.commSubjects.HIDDEN_ELEMENTS.STOP_HIDE_NEXT:
+                removeStyleRuleNode(botoStylesheet, removeElementCursorRuleNode)
+                document.removeEventListener('click', hideNextClickedElementEvent)
                 break
 
             default:
