@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Um adaptador de interfaces web, melhorando a usabilidade de páginas à partir de limitações e gostos do usuário",
     "scripts": {
-        "clean": "rd /s /q dist && cpy manifest.json dist && cpy src/assets/* dist/assets",
+        "clean": "cpy manifest.json dist && cp -R src/assets dist",
         "prebuild": "npm run clean",
         "prewatch": "npm run clean",
         "watch": "npm-run-all watch:*",
@@ -38,7 +38,10 @@
         "webpack-cli": ">=5.1.4"
     },
     "dependencies": {
+        "axios": "^1.5.1",
         "bold-ui": ">=1.0.0-beta.55",
+        "dotenv": "^16.3.1",
+        "openai": "^4.11.1",
         "react-dom": "16.13.1"
     }
 }
