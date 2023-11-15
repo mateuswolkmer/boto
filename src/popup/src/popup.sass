@@ -110,8 +110,8 @@ main
                         align-items: center
         &-extension
             button
-                margin-bottom: 15px
-                margin-top: auto
+                margin: 15px 0
+
     .footer
         width: 100%
         margin-top: 12px
@@ -221,10 +221,12 @@ main
     padding: 5px
     button
         width: 70px
+        border: none
         color: #ffffff
         background-color: $color_primary
-        height: 25px
+        height: 28px
         margin: 0 10px
+        border-radius: 5px
         &:hover
             cursor: pointer
             opacity: 0.7
@@ -246,20 +248,38 @@ main
     display: flex
     flex-direction: column
     padding: 5px
-    text-align: justify
-    height: 380px
-
-.voice-instructions-title
-    font-weight: bold
-    margin: 5px
     text-align: center
+    background-color: #F8F8FF
+    border-radius: 10px
+    margin-top: 50px
 
 .voice-instructions-tip
-    margin: 5px 0 2px 0
+    margin: 5px 0
     font-weight: 500
-
+    b
+        color: $color_primary 
 
 .voice-instructions-description
     font-size: 12px
     color: #aaaaaa
-    margin-bottom: 10px
+
+.alert 
+  position: fixed
+  bottom: 60px
+  display: none
+  width: 85%
+  height: 150px
+  background-color: rgba(217, 70, 70, 0.9)
+  z-index: 2
+  
+.alert-text
+  position: absolute
+  top: 50%
+  left: 50%
+  font-size: 16px
+  color: white
+  transform: translate(-50%,-50%)
+  -ms-transform: translate(-50%,-50%)
+  justify-items: center
+  b
+    font-size: 20px

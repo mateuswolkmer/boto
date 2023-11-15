@@ -15,7 +15,8 @@ const OptionsItem = ({
   children,
   tooltip,
   tooltipMinus,
-  tooltipPlus
+  tooltipPlus,
+  placeholder
 }) => {
   const decreaseItemValue = () => valueSetter(value - sliderStep > 0 ? value - sliderStep : 0);
   const increaseItemValue = () => valueSetter(value + sliderStep < 100 ? value + sliderStep : 100);
@@ -92,12 +93,12 @@ const OptionsItem = ({
             text={tooltip}>
             <Select
               items={selectItems}
-              name={label}
               value={value}
-              multiple
               onChange={(items) => valueSetter(items)}
+              name={label}
               itemToString={(item) => item}
-              placeholder="Esconda imagens ou propagandas"
+              placeholder={placeholder}
+              multiple
             />
           </Tooltip>
         )}

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import voiceIcon from '../assets/voiceListen.gif';
 import expandIcon from '../assets/down-arrow-color.png';
 import retractIcon from '../assets/up-arrow-color.png';
 import { valuesTreatment } from '../utils/valuesTreatment';
 import * as constants from '../utils/Constants';
+import { errorTreatment } from '../utils/errorTreatment';
+import { Icon } from 'bold-ui';
 
 export const VoiceControl = (props) => {
   const [visible, setVisible] = useState(false);
@@ -13,10 +15,12 @@ export const VoiceControl = (props) => {
   const [showWaitingMessage, setShowWaitingMessage] = useState(false);
   const [command, setCommand] = useState('');
   const [micActive, setMicActive] = useState(false);
-  const noiseItens = [];
+  const [errorMsg, setErrorMsg] = useState('');
+  const [alertVisibility, setAlertVisibility] = useState(false);
 
   const changeVisibility = () => {
     setVisible(!visible);
+    props.setIsVoiceControlActive(!visible);
   };
 
   const startRecognition = () => {
@@ -38,6 +42,7 @@ export const VoiceControl = (props) => {
       setShowCommandInteraction(false);
       setDefaultInteraction(true);
     }, 5000);
+    valuesTreatment('');
   };
 
   const speechRecognitionStarter = () => {
@@ -58,7 +63,12 @@ export const VoiceControl = (props) => {
       setDefaultInteraction(true);
       setShowCommandInteraction(false);
       setVoiceActiveInteraction(false);
-      alert(`error: ${e.error}`);
+      setErrorMsg(errorTreatment(e.error));
+      if (e.error !== 'no-speech') setAlertVisibility(true);
+      setTimeout(() => {
+        setAlertVisibility(false);
+        setErrorMsg('');
+      }, 3000);
     };
     recognition.onresult = (res) => {
       setCommand(res.results[0][0].transcript);
@@ -71,67 +81,63 @@ export const VoiceControl = (props) => {
 
   const updateSettings = (voiceType, voiceElement, voiceValue) => {
     parseFloat(voiceValue);
-    voiceValue = voiceValue / 2;
 
     if (voiceType === 'aumentar' && voiceElement === 'contraste')
-      props.setContrastValue(props.contrastValue + voiceValue);
+      props.setContrastValue(props.contrastValue + voiceValue / 2);
     if (voiceType === 'diminuir' && voiceElement === 'contraste')
-      props.setContrastValue(props.contrastValue - voiceValue);
+      props.setContrastValue(props.contrastValue - voiceValue / 2);
     if (voiceType === 'aumentar' && voiceElement === 'brilho')
-      props.setBrightnessValue(props.brightnessValue + voiceValue);
+      props.setBrightnessValue(props.brightnessValue + voiceValue / 2);
     if (voiceType === 'diminuir' && voiceElement === 'brilho')
-      props.setBrightnessValue(props.brightnessValue - voiceValue);
+      props.setBrightnessValue(props.brightnessValue - voiceValue / 2);
     if (voiceType === 'aumentar' && voiceElement === 'zoom')
-      props.setZoomValue(props.zoomValue + voiceValue);
+      props.setZoomValue(props.zoomValue + voiceValue / 2);
     if (voiceType === 'diminuir' && voiceElement === 'zoom')
-      props.setZoomValue(props.zoomValue - voiceValue);
+      props.setZoomValue(props.zoomValue - voiceValue / 2);
     if (voiceType === 'aumentar' && voiceElement === 'espaçamento')
-      props.setFontSizeValue(props.fontSizeValue + voiceValue * 2);
+      props.setFontSizeValue(props.fontSizeValue + voiceValue);
     if (voiceType === 'diminuir' && voiceElement === 'espaçamento')
-      props.setFontSizeValue(props.fontSizeValue - voiceValue * 2);
+      props.setFontSizeValue(props.fontSizeValue - voiceValue);
 
     if (voiceType === 'esconder' && voiceElement === 'imagens') {
-      noiseItens.push('Imagens');
-      props.setNoiseValue(noiseItens);
+      if (['Imagens'].includes(props.noiseValue)) {
+        return null;
+      } else {
+        props.setNoiseValue((prevArray) => [...prevArray, 'Imagens']);
+      }
     }
     if (voiceType === 'mostrar' && voiceElement === 'imagens') {
-      const index = noiseItens.indexOf('Imagens');
-      if (index !== -1) noiseItens.splice(index, 1);
-      props.setNoiseValue(noiseItens);
+      props.setNoiseValue((prevArray) => prevArray.filter((item) => item !== 'Imagens'));
     }
     if (voiceType === 'esconder' && voiceElement === 'propagandas') {
-      noiseItens.push('Propagandas');
-      props.setNoiseValue(noiseItens);
+      if (['Propagandas'].includes(props.noiseValue)) {
+        return null;
+      } else {
+        props.setNoiseValue((prevArray) => [...prevArray, 'Propagandas']);
+      }
     }
     if (voiceType === 'mostrar' && voiceElement === 'propagandas') {
-      const index = noiseItens.indexOf('Propagandas');
-      if (index !== -1) noiseItens.splice(index, 1);
-      props.setNoiseValue(noiseItens);
+      props.setNoiseValue((prevArray) => prevArray.filter((item) => item !== 'Propagandas'));
     }
 
-    if (voiceType === 'mudar' && voiceElement === 'interface')
-      props.setActiveTab(constants.tabs.INTERFACE);
-    if (voiceType === 'mudar' && voiceElement === 'perfil')
-      props.setActiveTab(constants.tabs.PROFILE);
-    if (voiceType === 'mudar' && voiceElement === 'extras')
-      props.setActiveTab(constants.tabs.EXTENSION);
+    if (voiceElement === 'interface') props.setActiveTab(constants.tabs.INTERFACE);
+    if (voiceElement === 'perfil') props.setActiveTab(constants.tabs.PROFILE);
+    if (voiceElement === 'extras') props.setActiveTab(constants.tabs.EXTENSION);
 
-    if (voiceType === 'marcar' && voiceElement === 'primeira opção')
-      props.setAutoFixElementsValue(true);
-    if (voiceType === 'desmarcar' && voiceElement === 'primeira opção')
+    if (voiceType === 'marcar' && voiceElement === 'primeira') props.setAutoFixElementsValue(true);
+    if (voiceType === 'desmarcar' && voiceElement === 'primeira')
       props.setAutoFixElementsValue(false);
-    if (voiceType === 'marcar' && voiceElement === 'segunda opção')
-      props.setAutoClickOnHoverValue(true);
-    if (voiceType === 'desmarcar' && voiceElement === 'segunda opção')
+    if (voiceType === 'marcar' && voiceElement === 'segunda') props.setAutoClickOnHoverValue(true);
+    if (voiceType === 'desmarcar' && voiceElement === 'segunda')
       props.setAutoClickOnHoverValue(false);
-    if (voiceType === 'marcar' && voiceElement === 'terceira opção')
+    if (voiceType === 'marcar' && voiceElement === 'terceira')
       props.setTurnExtensionBiggerValue(true);
-    if (voiceType === 'desmarcar' && voiceElement === 'terceira opção')
+    if (voiceType === 'desmarcar' && voiceElement === 'terceira')
       props.setTurnExtensionBiggerValue(false);
-    if (voiceType === 'marcar' && voiceElement === 'quarta opção')
-      props.setAcceptCookiesValue(true);
-    if (voiceType === 'desmarcar' && voiceElement === 'quarta opção')
-      props.setAcceptCookiesValue(false);
+    if (voiceType === 'marcar' && voiceElement === 'quarta') props.setAcceptCookiesValue(true);
+    if (voiceType === 'desmarcar' && voiceElement === 'quarta') props.setAcceptCookiesValue(false);
+    if (voiceType === 'restaurar' && voiceElement === 'configurações')
+      props.resetDefaultSettingsProfile();
 
     if (voiceType === 'nome')
       props.setUserData({
@@ -142,57 +148,60 @@ export const VoiceControl = (props) => {
     if (voiceType === 'idade')
       props.setUserData({
         ...props.userData,
-        age: voiceValue * 2
+        age: voiceValue
       });
 
-    if (voiceType === 'deficiência visual' && (voiceElement === 'Não' || 'Pouco' || 'Bastante'))
+    if (voiceType === 'deficiência visual' && ['Não', 'Pouco', 'Bastante'].includes(voiceElement))
       props.setUserData({
         ...props.userData,
         sightDeficiency: voiceElement
       });
 
-    if (voiceType === 'deficiência motora' && (voiceElement === 'Não' || 'Leve' || 'Severa'))
+    if (voiceType === 'deficiência motora' && ['Não', 'Leve', 'Severa'].includes(voiceElement))
       props.setUserData({
         ...props.userData,
         motorDeficiency: voiceElement
       });
 
-    if (voiceType === 'deficiência cognitiva' && (voiceElement === 'Não' || 'Leve' || 'Severa'))
+    if (voiceType === 'deficiência cognitiva' && ['Não', 'Leve', 'Severa'].includes(voiceElement))
       props.setUserData({
         ...props.userData,
         cognitiveDeficiency: voiceElement
       });
 
-    if (
-      voiceType === 'mão predominante' &&
-      (voiceElement === 'Esquerda (canhoto)' || 'Direita (destro)')
-    )
+    if (voiceType === 'mão predominante' && (voiceElement === 'Esquerda' || 'Direita'))
       props.setUserData({
         ...props.userData,
         handedness: voiceElement
       });
   };
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === ' ' || event.key === 'Spacebar') {
-        setMicActive(!micActive);
-        if (!micActive) startRecognition();
-        else stopRecognition();
-      }
-    };
+  const handleKeyDown = (event) => {
+    if (event.key === ' ' || event.key === 'Spacebar') {
+      setMicActive(!micActive);
+      if (!micActive) startRecognition();
+      else stopRecognition();
+    }
+    document.removeEventListener('keypress', handleKeyDown);
+  };
 
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [micActive]);
+  document.addEventListener('keypress', handleKeyDown);
 
   const recognition = speechRecognitionStarter();
 
   return (
     <>
+      <div
+        className="alert"
+        style={{ display: alertVisibility ? 'block' : 'none' }}>
+        <div className="alert-text">
+          <p>
+            <Icon icon="exclamationTriangleOutline" />
+            <b> ERRO: </b>
+          </p>
+          <p>{errorMsg}</p>
+        </div>
+      </div>
       <div className={visible ? 'voice-control-expanded' : 'voice-control'}>
         <div
           className="expand"
@@ -214,8 +223,8 @@ export const VoiceControl = (props) => {
         {visible && (
           <>
             <div className="voice-control-buttons">
-              <button onClick={startRecognition}> Start </button>
-              <button onClick={stopRecognition}> Stop </button>
+              <button onClick={startRecognition}> Iniciar </button>
+              <button onClick={stopRecognition}> Parar </button>
             </div>
             <div className="voice-control-interaction">
               {defaultInteraction &&
@@ -224,11 +233,12 @@ export const VoiceControl = (props) => {
                 !showCommandInteraction && (
                   <div>
                     <p>
-                      Aperte <b>Start/Stop</b> ou <b>'Barra de Espaço'</b> para ativar e desativar.
+                      Aperte <b>Iniciar/Parar</b> ou <b>'Barra de Espaço'</b> para ativar e
+                      desativar.
                     </p>
                   </div>
                 )}
-              {showWaitingMessage && (
+              {showWaitingMessage && !voiceActiveInteraction && (
                 <div>
                   <p> Aguarde ... </p>
                 </div>

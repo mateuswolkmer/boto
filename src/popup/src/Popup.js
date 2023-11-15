@@ -18,13 +18,12 @@ import logo from './assets/boto.png';
 import OptionsItem from './components/OptionsItem.jsx';
 import UserForm from './components/UserForm';
 import * as constants from './utils/Constants';
+import VoiceControl from './components/VoiceControl';
 import {
   sendMessageToContent,
   sendMessageToAllContents,
   sendMessageToBackground
 } from './utils/MessageManager';
-
-import VoiceControl from './components/VoiceControl';
 
 const botoTheme = createTheme({
   pallete: {
@@ -55,8 +54,10 @@ function Popup() {
     sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.HIDE_NEXT);
     window.close();
   };
+
   const resetHiddenElements = () =>
     sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.RESET);
+
   const stopHideNextElement = () =>
     sendMessageToContent(constants.commSubjects.HIDDEN_ELEMENTS.STOP_HIDE_NEXT);
 
@@ -133,6 +134,7 @@ function Popup() {
   const [popupUpdating, setPopupUpdating] = useState(false);
   const [formActive, setFormActive] = useState(false);
   const [activeTab, setActiveTab] = useState(constants.tabs.INTERFACE);
+  const [isVoiceControlActive, setIsVoiceControlActive] = useState(false);
 
   // Settings
   const [brightnessValue, setBrightnessValue] = useState(50);
@@ -302,7 +304,7 @@ function Popup() {
                 displayValueConversor={(value) => (value - 50) * 2}
                 minusIcon="desktopFilled"
                 plusIcon="desktopOutline"
-                tooltip="Altere o brilho da página arrastando a barra"
+                tooltip='Altere o brilho da página arrastando a barra ou falando "diminui/aumentar o brilho"'
                 tooltipMinus="Diminuir brilho"
                 tooltipPlus="Aumentar brilho"
               />
@@ -315,7 +317,7 @@ function Popup() {
                 displayValueConversor={(value) => (value - 50) * 2}
                 minusIcon="contrast"
                 plusIcon="contrastActive"
-                tooltip="Altere o contraste da página arrastando a barra"
+                tooltip='Altere o contraste da página arrastando a barra ou falando "diminuir/aumentar o contraste"'
                 tooltipMinus="Diminuir contraste"
                 tooltipPlus="Aumentar contraste"
               />
@@ -328,7 +330,7 @@ function Popup() {
                 displayValueConversor={(value) => (value - 50) * 2}
                 minusIcon="zoomMinusOutline"
                 plusIcon="zoomPlusOutline"
-                tooltip="Altere o tamanho dos elementos da página arrastando a barra para a direita ou para a esquerda"
+                tooltip='Altere o tamanho dos elementos da página arrastando a barra para a direita ou para a esquerda ou falando "diminuir/aumentar o zoom"'
                 tooltipMinus="Diminuir tamanho dos elementos"
                 tooltipPlus="Aumentar tamanho dos elementos"
               />
@@ -341,7 +343,7 @@ function Popup() {
                 displayValueConversor={(value) => value}
                 minusIcon="minimize"
                 plusIcon="expand"
-                tooltip="Altere o espaçamento de textos da página arrastando a barra"
+                tooltip='Altere o espaçamento de textos da página arrastando a barra ou falando "diminuir/aumentar o espaçamento"'
                 tooltipMinus="Diminuir espaçamento de textos"
                 tooltipPlus="Aumentar espaçamento de textos"
               />
@@ -352,31 +354,36 @@ function Popup() {
                 valueSetter={setNoiseValue}
                 selectItems={Object.values(constants.noiseTypes)}
                 tooltip="Clique neste espaço se quiser esconder imagens e/ou propagandas da página"
+                placeholder={
+                  isVoiceControlActive ? 'Fale "esconder" + "imagens" / "propagandas"' : ''
+                }
               />
-              <OptionsItem
-                label="Esconder elemento específico"
-                type={constants.optionsItemTypes.CUSTOM}>
-                <Tooltip
-                  placement="top"
-                  text="Ao clicar neste botão, a extensão será minimizada e você podera esconder um elemento da página clicando em cima dele">
-                  <Button
-                    size="small"
-                    onClick={hideNextElement}>
-                    <Icon icon="penTool" /> Iniciar seleção
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  placement="top"
-                  text="Exibir novamente os elementos específicos escondidos">
-                  <Button
-                    size="small"
-                    kind="primary"
-                    skin="outline"
-                    onClick={resetHiddenElements}>
-                    Restaurar seleção
-                  </Button>
-                </Tooltip>
-              </OptionsItem>
+              {!isVoiceControlActive && (
+                <OptionsItem
+                  label="Esconder elemento específico"
+                  type={constants.optionsItemTypes.CUSTOM}>
+                  <Tooltip
+                    placement="top"
+                    text="Ao clicar neste botão, a extensão será minimizada e você podera esconder um elemento da página clicando em cima dele">
+                    <Button
+                      size="small"
+                      onClick={hideNextElement}>
+                      <Icon icon="penTool" /> Iniciar seleção
+                    </Button>
+                  </Tooltip>
+                  <Tooltip
+                    placement="top"
+                    text="Exibir novamente os elementos específicos escondidos">
+                    <Button
+                      size="small"
+                      kind="primary"
+                      skin="outline"
+                      onClick={resetHiddenElements}>
+                      Restaurar seleção
+                    </Button>
+                  </Tooltip>
+                </OptionsItem>
+              )}
               {/* <OptionsItem label='Daltonismo' type={constants.optionsItemTypes.SELECT}
                                 value={daltonismValue} valueSetter={setDaltonismValue} selectItems={Object.values(constants.daltonismTypes)}
                                 tooltip='Preencher'/> */}
@@ -389,6 +396,7 @@ function Popup() {
                 setUserData={setUserData}
                 setFormActive={setFormActive}
                 profileForm={true}
+                isVoiceControlActive={isVoiceControlActive}
               />
             </section>
           )}
@@ -398,7 +406,11 @@ function Popup() {
                 type={constants.optionsItemTypes.CUSTOM2}
                 tooltip="Esta opção ajusta automaticamente elementos que possuem um baixo nível de contraste, facilitando a visualização">
                 <Checkbox
-                  label="Adaptar automaticamente elementos de baixa acessibilidade"
+                  label={
+                    <p>
+                      Adaptar automaticamente elementos de <b>baixa acessibilidade</b>
+                    </p>
+                  }
                   checked={autoFixElementsValue}
                   onChange={(e) => setAutoFixElementsValue(e.target.checked)}
                 />
@@ -407,7 +419,11 @@ function Popup() {
                 type={constants.optionsItemTypes.CUSTOM2}
                 tooltip="Com esta funcionalidade ativada, basta mover o mouse para o elemento que deseja acessar e após 3 segundos o Boto irá clicar automaticamente para você">
                 <Checkbox
-                  label="Realizar clique automático após 3s com o mouse parado"
+                  label={
+                    <p>
+                      Realizar <b>clique automático</b> após 3s com o mouse parado
+                    </p>
+                  }
                   checked={autoClickOnHoverValue}
                   onChange={(e) => setAutoClickOnHoverValue(e.target.checked)}
                 />
@@ -416,7 +432,11 @@ function Popup() {
                 type={constants.optionsItemTypes.CUSTOM2}
                 tooltip="Caso deseje aumentar o tamanho dos elementos do boto, basta marcar esta opção">
                 <Checkbox
-                  label="Aumentar o tamanho da extensão para melhor visualização"
+                  label={
+                    <p>
+                      <b>Aumentar o tamanho</b> da extensão para melhor visualização
+                    </p>
+                  }
                   checked={turnExtensionBiggerValue}
                   onChange={(e) => setTurnExtensionBiggerValue(e.target.checked)}
                 />
@@ -425,7 +445,11 @@ function Popup() {
                 type={constants.optionsItemTypes.CUSTOM2}
                 tooltip='Sabe aquelas solicitações que aparecem pedindo sua permissão para uso de "cookies"? Basta ativar esta opção para aceitá-las automaticamente'>
                 <Checkbox
-                  label='Aceitar automaticamente todas as solicitações de uso de "cookies"'
+                  label={
+                    <p>
+                      Aceitar automaticamente todas as solicitações de uso de <b>"cookies"</b>
+                    </p>
+                  }
                   checked={acceptCookiesValue}
                   onChange={(e) => setAcceptCookiesValue(e.target.checked)}
                 />
@@ -441,6 +465,13 @@ function Popup() {
                   <Icon icon="undo" /> Restaurar configurações
                 </Button>
               </Tooltip>
+              {isVoiceControlActive && (
+                <div className="voice-instructions">
+                  <scan className="voice-instructions-tip">
+                    <b>Dica:</b> Fale "marcar" ou "desmarcar" + palavra chave indicada em negrito
+                  </scan>
+                </div>
+              )}
             </section>
           )}
 
@@ -455,6 +486,7 @@ function Popup() {
               fontSizeValue={fontSizeValue}
               setFontSizeValue={setFontSizeValue}
               setNoiseValue={setNoiseValue}
+              noiseValue={noiseValue}
               setActiveTab={setActiveTab}
               setAutoFixElementsValue={setAutoFixElementsValue}
               setAutoClickOnHoverValue={setAutoClickOnHoverValue}
@@ -462,6 +494,8 @@ function Popup() {
               setAcceptCookiesValue={setAcceptCookiesValue}
               setUserData={setUserData}
               userData={userData}
+              setIsVoiceControlActive={setIsVoiceControlActive}
+              resetDefaultSettingsProfile={resetDefaultSettingsBasedOnUserProfile}
             />
           )}
 

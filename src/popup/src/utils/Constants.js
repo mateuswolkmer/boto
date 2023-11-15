@@ -28,6 +28,7 @@ export const noiseTypes = {
   ADS: 'Propagandas',
   IMAGES: 'Imagens'
 };
+
 export const daltonismTypes = {
   NO: 'Não',
   PROTANOPIA: 'Protanopia',
