@@ -66,6 +66,10 @@ export const VoiceControl = (props) => {
       setErrorMsg(errorTreatment(e.error));
       if (e.error !== 'no-speech') setAlertVisibility(true);
       setTimeout(() => {
+        if (e.error === 'not-allowed') {
+          stopRecognition();
+          setShowCommandInteraction(false);
+        }
         setAlertVisibility(false);
         setErrorMsg('');
       }, 3000);
@@ -188,6 +192,13 @@ export const VoiceControl = (props) => {
   document.addEventListener('keypress', handleKeyDown);
 
   const recognition = speechRecognitionStarter();
+
+  const handleDefaultInteraction = () => {
+    setDefaultInteraction(true);
+    setShowWaitingMessage(false);
+    setVoiceActiveInteraction(false);
+    setShowCommandInteraction(false);
+  };
 
   return (
     <>
