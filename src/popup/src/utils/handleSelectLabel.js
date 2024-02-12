@@ -33,6 +33,19 @@ export const handleSelectLabel = (label, isVoiceControlActive) => {
           </p>
         );
       }
+    case 'daltonism':
+      if (!isVoiceControlActive) {
+        return 'Daltonismo';
+      } else {
+        return (
+          <p>
+            Daltonismo
+            <span style={{ fontWeight: 300, fontSize: 12 }}>
+              (Protanopia/Deuteranopia/Tritanopia)
+            </span>
+          </p>
+        );
+      }
     case 'handedness':
       if (!isVoiceControlActive) {
         return 'Mão predominante';

@@ -76,6 +76,8 @@ function Popup() {
     setAcceptCookiesValue(false);
     resetHiddenElements();
     setPopupUpdating(false);
+    setDaltonismValue();
+    setColorLegendValue();
   };
 
   const disableExtension = (enabled) => {
@@ -143,6 +145,7 @@ function Popup() {
   const [fontSizeValue, setFontSizeValue] = useState(50);
   const [noiseValue, setNoiseValue] = useState([]);
   const [daltonismValue, setDaltonismValue] = useState(constants.daltonismTypes.NO);
+  const [colorLegendValue, setColorLegendValue] = useState(false);
   const [autoClickOnHoverValue, setAutoClickOnHoverValue] = useState(false);
   const [turnExtensionBiggerValue, setTurnExtensionBiggerValue] = useState(false);
 
@@ -157,6 +160,7 @@ function Popup() {
         setFontSizeValue(settingsData.options.fontSize);
         setNoiseValue(settingsData.options.noise);
         setDaltonismValue(settingsData.options.daltonism);
+        setColorLegendValue(settingsData.options.colorLegend);
         setAutoClickOnHoverValue(settingsData.options.autoClickOnHover);
         setTurnExtensionBiggerValue(settingsData.options.turnExtensionBigger);
       }
@@ -173,6 +177,7 @@ function Popup() {
         fontSize: fontSizeValue,
         noise: noiseValue,
         daltonism: daltonismValue,
+        colorLegend: colorLegendValue,
         autoClickOnHover: autoClickOnHoverValue,
         turnExtensionBigger: turnExtensionBiggerValue
       }
@@ -214,6 +219,21 @@ function Popup() {
       stopHideNextElement();
     });
   }, []);
+
+  useEffect(() => {
+    if (popupInitialized && !popupUpdating) updateSettingsDataMessage();
+  }, [
+    formActive,
+    brightnessValue,
+    contrastValue,
+    fontSizeValue,
+    zoomValue,
+    noiseValue,
+    daltonismValue,
+    colorLegendValue,
+    autoClickOnHoverValue,
+    turnExtensionBiggerValue
+  ]);
 
   useEffect(() => {
     if (popupInitialized && !popupUpdating) updateSettingsDataMessage();
@@ -452,6 +472,15 @@ function Popup() {
                   }
                   checked={acceptCookiesValue}
                   onChange={(e) => setAcceptCookiesValue(e.target.checked)}
+                />
+              </OptionsItem>
+              <OptionsItem
+                type={constants.optionsItemTypes.CUSTOM2}
+                tooltip="Apresenta uma caixa ao lado do cursor do mouse, mostrando o valor em rgb das cores do texto">
+                <Checkbox
+                  label="Legenda de cores"
+                  checked={colorLegendValue}
+                  onChange={(e) => setColorLegendValue(e.target.checked)}
                 />
               </OptionsItem>
               <Tooltip

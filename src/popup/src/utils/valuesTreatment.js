@@ -22,6 +22,7 @@ export const valuesTreatment = (string) => {
   if (command.includes('deficiência cognitiva')) type = 'deficiência cognitiva';
   if (command.includes('mão predominante')) type = 'mão predominante';
   if (command.includes('mão dominante')) type = 'mão predominante';
+  if (command.includes('daltonismo')) type = 'daltonismo';
 
   if (command.includes('brilho')) element = 'brilho';
   if (command.includes('contraste')) element = 'contraste';
@@ -62,6 +63,9 @@ export const valuesTreatment = (string) => {
   if (command.includes('destro')) element = 'Direita';
   if (command.includes('esquerda')) element = 'Esquerda';
   if (command.includes('canhoto')) element = 'Esquerda';
+  if (command.includes('tritanopia')) element = 'Tritanopia';
+  if (command.includes('deuteranopia')) element = 'Deuteranopia';
+  if (command.includes('protanopia')) element = 'Protanopia';
   if (command.includes('configurações')) element = 'configurações';
   if (command.includes('configuração')) element = 'configurações';
 

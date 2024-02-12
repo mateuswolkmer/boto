@@ -178,6 +178,15 @@ export const VoiceControl = (props) => {
         ...props.userData,
         handedness: voiceElement
       });
+
+    if (
+      voiceType === 'daltonismo' &&
+      ['Protanopia', 'Deuteranopia', 'Tritanopia', 'Não'].includes(voiceElement)
+    )
+      props.setUserData({
+        ...props.userData,
+        daltonism: voiceElement
+      });
   };
 
   const handleKeyDown = (event) => {

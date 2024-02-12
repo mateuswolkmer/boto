@@ -158,21 +158,25 @@ const UserForm = ({ userData, setUserData, setFormActive, profileForm, isVoiceCo
                   </span>
                 </>
               )}
-              {/* { currentStep === 5 &&
-                                <>
-                                    <Select
-                                        label='Você possui algum tipo de daltonismo?'
-                                        items={Object.values(constants.daltonismTypes)}
-                                        value={userData.daltonism}
-                                        onChange={handleChange('daltonism')}
-                                        onKeyPress={handleKeyPress}
-                                        itemToString={item => item}
-                                        clearable={false}
-                                        name='daltonism' />
-                                    <span class='user-form_field-tip'>Irei aplicar um filtro de cores especial para você caso possua algum tipo de daltonismo</span>
-                                </>
-                            } */}
               {currentStep === 5 && (
+                <>
+                  <Select
+                    label="Você possui algum tipo de daltonismo?"
+                    items={Object.values(constants.daltonismTypes)}
+                    value={userData.daltonism}
+                    onChange={handleChange('daltonism')}
+                    onKeyPress={handleKeyPress}
+                    itemToString={(item) => item}
+                    clearable={false}
+                    name="daltonism"
+                  />
+                  <span class="user-form_field-tip">
+                    Irei aplicar um filtro de cores especial para você caso possua algum tipo de
+                    daltonismo
+                  </span>
+                </>
+              )}
+              {currentStep === 6 && (
                 <>
                   <Select
                     label="Qual sua mão predominante?"
@@ -277,14 +281,15 @@ const UserForm = ({ userData, setUserData, setFormActive, profileForm, isVoiceCo
           clearable={false}
           name="cognitiveDeficiency"
         />
-        {/* <Select
-                    label='Daltonismo (em desenvolvimento)'
-                    items={Object.values(constants.daltonismTypes)}
-                    value={userData.daltonism}
-                    onChange={handleChange('daltonism')}
-                    itemToString={item => item}
-                    clearable={false}
-                    name='daltonism' /> */}
+        <Select
+          label={handleSelectLabel('daltonism', isVoiceControlActive)}
+          items={Object.values(constants.daltonismTypes)}
+          value={userData.daltonism}
+          onChange={handleChange('daltonism')}
+          itemToString={(item) => item}
+          clearable={false}
+          name="daltonism"
+        />
         <Select
           label={handleSelectLabel('handedness', isVoiceControlActive)}
           items={Object.values(constants.handednessTypes)}

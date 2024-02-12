@@ -64,6 +64,7 @@ export const defaultUserData = {
   daltonism: daltonismTypes.NO,
   handedness: handednessTypes.RIGHT
 };
+
 export const defaultSettingsData = {
   userFormCompleted: false,
   options: {
