@@ -47,7 +47,7 @@ main
     .body
         width: 100%
         flex-grow: 1
-        height: 400px
+        height: 380px
         display: flex
         flex-direction: column
         &-interface, &-extension
@@ -110,8 +110,7 @@ main
                         align-items: center
         &-extension
             button
-                margin-bottom: 15px
-                margin-top: auto
+                margin: 15px 0
 
     .footer
         width: 100%
@@ -176,3 +175,111 @@ main
         width: 100%
         button
             width: 100px
+
+
+.voice-control
+    display: flex
+    flex-direction: column
+    margin-top: 5px
+    width: 100%
+    border: solid 1px $color_primary
+    &:hover
+        opacity: 0.8
+    p
+        font-weight: bold
+        cursor: pointer
+
+.voice-control-expanded
+    border: solid 1px $color_primary
+    display: flex
+    flex-direction: column
+    width: 100%
+    margin-top: 5px
+    height: 170px
+
+.expand
+    display: flex
+    flex-direction: row
+    justify-content: center
+    align-items: center
+    p
+        margin: 5px 10px
+        font-size: 16px
+        color: $color_primary
+        font-weight: bold
+        cursor: pointer
+        &:hover
+            opacity: 0.8
+    img
+        width: 15px
+        height: 15px
+        color: $color_primary
+
+.voice-control-buttons
+    display: flex
+    justify-content: center
+    padding: 5px
+    button
+        width: 70px
+        border: none
+        color: #ffffff
+        background-color: $color_primary
+        height: 28px
+        margin: 0 10px
+        border-radius: 5px
+        &:hover
+            cursor: pointer
+            opacity: 0.7
+            
+
+.voice-control-interaction
+    margin: 10px auto
+    padding: 0 15px
+    text-align: center
+    p
+        font-size: 16px
+        b
+            color: $color_primary 
+
+.command-title
+    font-weight: bold
+
+.voice-instructions
+    display: flex
+    flex-direction: column
+    padding: 5px
+    text-align: center
+    background-color: #F8F8FF
+    border-radius: 10px
+    margin-top: 25px
+
+.voice-instructions-tip
+    margin: 5px 0
+    font-weight: 500
+    b
+        color: $color_primary 
+
+.voice-instructions-description
+    font-size: 12px
+    color: #aaaaaa
+
+.alert 
+  position: fixed
+  bottom: 60px
+  display: none
+  width: 85%
+  height: 150px
+  background-color: rgba(217, 70, 70, 0.9)
+  z-index: 2
+  
+.alert-text
+  position: absolute
+  top: 50%
+  left: 50%
+  font-size: 16px
+  color: white
+  transform: translate(-50%,-50%)
+  -ms-transform: translate(-50%,-50%)
+  justify-items: center
+  b
+    font-size: 20px
